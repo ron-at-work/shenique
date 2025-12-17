@@ -7,10 +7,11 @@ import woocommerce from '@/lib/woocommerce';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const order = await woocommerce.getOrder(params.id);
+    const { id } = await params;
+    const order = await woocommerce.getOrder(id);
     return NextResponse.json(order);
   } catch (error: any) {
     return NextResponse.json(
@@ -26,11 +27,12 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const order = await woocommerce.updateOrder(params.id, body);
+    const order = await woocommerce.updateOrder(id, body);
     return NextResponse.json(order);
   } catch (error: any) {
     return NextResponse.json(
@@ -46,13 +48,14 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
     const force = searchParams.get('force') === 'true';
     
-    await woocommerce.deleteOrder(params.id, force);
+    await woocommerce.deleteOrder(id, force);
     return NextResponse.json({ success: true, message: 'Order deleted' });
   } catch (error: any) {
     return NextResponse.json(
@@ -61,4 +64,3 @@ export async function DELETE(
     );
   }
 }
-

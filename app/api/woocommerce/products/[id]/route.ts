@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * GET /api/woocommerce/products/[id]
  * Get Product by ID
- * URL: {{base_url}}/wp-json/wc/v3/products/{{product_id}}?consumer_key={{ck}}&consumer_secret={{cs}}
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const consumerKey = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY;
     const consumerSecret = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET;
@@ -22,7 +22,7 @@ export async function GET(
     }
 
     const cleanBaseUrl = baseUrl.trim().replace(/\/$/, '');
-    const url = `${cleanBaseUrl}/wp-json/wc/v3/products/${params.id}?consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+    const url = `${cleanBaseUrl}/wp-json/wc/v3/products/${id}?consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -50,13 +50,13 @@ export async function GET(
 /**
  * PUT /api/woocommerce/products/[id]
  * Update Product
- * URL: {{base_url}}/wp-json/wc/v3/products/{{product_id}}?consumer_key={{ck}}&consumer_secret={{cs}}
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const consumerKey = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY;
     const consumerSecret = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET;
@@ -70,7 +70,7 @@ export async function PUT(
 
     const body = await request.json();
     const cleanBaseUrl = baseUrl.trim().replace(/\/$/, '');
-    const url = `${cleanBaseUrl}/wp-json/wc/v3/products/${params.id}?consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+    const url = `${cleanBaseUrl}/wp-json/wc/v3/products/${id}?consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -99,13 +99,13 @@ export async function PUT(
 /**
  * DELETE /api/woocommerce/products/[id]
  * Delete Product
- * URL: {{base_url}}/wp-json/wc/v3/products/{{product_id}}?force=true&consumer_key={{ck}}&consumer_secret={{cs}}
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const consumerKey = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY;
     const consumerSecret = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET;
@@ -120,7 +120,7 @@ export async function DELETE(
     const searchParams = request.nextUrl.searchParams;
     const force = searchParams.get('force') === 'true';
     const cleanBaseUrl = baseUrl.trim().replace(/\/$/, '');
-    const url = `${cleanBaseUrl}/wp-json/wc/v3/products/${params.id}?force=${force}&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+    const url = `${cleanBaseUrl}/wp-json/wc/v3/products/${id}?force=${force}&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
 
     const response = await fetch(url, {
       method: 'DELETE',
@@ -144,4 +144,3 @@ export async function DELETE(
     );
   }
 }
-

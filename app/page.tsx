@@ -146,50 +146,86 @@ export default function Home() {
     },
   ];
 
+  // Banner carousel images
+  const bannerImages = [
+    {
+      src: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=1920&h=1080&fit=crop&q=80",
+      alt: "Elegant Kurti Collection"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=1920&h=1080&fit=crop&q=80",
+      alt: "Traditional Wear"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=1920&h=1080&fit=crop&q=80",
+      alt: "Festive Collection"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=1920&h=1080&fit=crop&q=80",
+      alt: "Winter Woolen Kurtis"
+    },
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Auto-slide carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % bannerImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [bannerImages.length]);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      {/* Fixed Header */}
+      <Header transparent />
+      
+      {/* Hero Carousel Section - full screen behind fixed header */}
+      <section className="relative w-full h-screen">
+
+        {/* Carousel Images */}
+        <div className="relative w-full h-full overflow-hidden">
+          {bannerImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Dots Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+          {bannerImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all cursor-pointer ${
+                index === currentSlide
+                  ? "bg-white w-8"
+                  : "bg-white/50 hover:bg-white/80"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </section>
 
       <main>
-        {/* Hero Banner */}
-        <section className="relative bg-gradient-to-r from-pink-500 to-purple-600 text-white py-16 overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="text-center md:text-left">
-                <h1 className="text-5xl md:text-6xl font-bold mb-4">
-                  Shop The Best Women's Kurtis
-                </h1>
-                <p className="text-xl mb-8 max-w-2xl">
-                  Discover elegant kurtis and woolen kurtis at Shenique. Over
-                  35 years of experience in creating magical outfits for women.
-                </p>
-                <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                  <Link
-                    href="/kurti"
-                    className="px-8 py-3 bg-white text-pink-600 rounded-full font-semibold hover:bg-gray-100 transition-colors"
-                  >
-                    Shop Now
-                  </Link>
-                  <Link
-                    href="/new-arrivals"
-                    className="px-8 py-3 border-2 border-white text-white rounded-full font-semibold hover:bg-white/10 transition-colors"
-                  >
-                    New Arrivals
-                  </Link>
-                </div>
-              </div>
-              <div className="relative h-96 md:h-[500px] rounded-lg overflow-hidden shadow-2xl">
-                <Image
-                  src="https://shenique.in/wp-content/uploads/2025/09/neer1.png"
-                  alt="Beautiful woman wearing elegant kurti"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Shop by Categories */}
         <section className="py-16 bg-white">

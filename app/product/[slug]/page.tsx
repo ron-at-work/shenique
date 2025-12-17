@@ -1,86 +1,74 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useProduct } from "@/lib/hooks/useWooCommerce";
+import { useParams, useRouter } from "next/navigation";
+import { useCart } from "@/lib/context/CartContext";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params?.slug as string;
-  const [selectedSize, setSelectedSize] = useState("XS");
+  const { addToCart, setIsCartOpen } = useCart();
+  
+  const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedColor, setSelectedColor] = useState(0);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [pincode, setPincode] = useState("");
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [showAddedNotification, setShowAddedNotification] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    description: false,
+    description: true,
     styleNotes: false,
     sizeFit: false,
     material: false,
     specifications: false,
   });
 
-  // Try to fetch product from WooCommerce if product ID is in slug
-  // Otherwise use static data
-  const productId = slug.match(/\d+/)?.[0];
-  const { data: wooProduct, loading: productLoading } = useProduct(productId || "", {
-    onError: () => {
-      // Silently fail and use static data
-    },
-  });
-
-  // Default/fallback product data
-  const defaultProduct = {
-    title: "Maroon Embroidered Silk Straight Kurta",
-    sku: "58138RR-XS",
-    originalPrice: 2799,
-    discountedPrice: 819,
-    discountPercent: 71,
+  // Product data (in real app, this would come from API based on slug)
+  const product = {
+    id: slug,
+    name: "Maroon Embroidered Silk Straight Kurti",
+    sku: "SHN-KRT-58138",
+    category: "Kurti",
+    price: 1299,
+    originalPrice: 2499,
+    discount: 48,
     images: [
-      "https://shenique.in/wp-content/uploads/2025/09/neer1.png",
-      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=1000&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=1200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&h=1200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&h=1200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=1200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1564257577761-4e8938e885a6?w=800&h=1200&fit=crop&q=80",
     ],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    description: "This elegant maroon straight-cut kurta features intricate silver embroidery around the neckline and cuffs. Made from premium silk fabric, it offers a comfortable fit and timeless appeal. Perfect for festive occasions and special events.",
-    styleNotes: "Pair this kurta with light-colored straight pants or palazzos. Accessorize with silver jewelry to complement the embroidery. The straight cut provides a relaxed, comfortable fit suitable for all body types.",
-    sizeFit: "This kurta has a straight, relaxed fit. The length extends to just above the ankles. Available in sizes XS to XXL. Please refer to the size chart for accurate measurements.",
-    material: "100% Premium Silk. The fabric is soft, breathable, and easy to maintain. Hand wash recommended for best results.",
+    colors: [
+      { name: "Maroon", hex: "#7F1D1D" },
+      { name: "Navy", hex: "#1E3A5F" },
+      { name: "Green", hex: "#166534" },
+    ],
+    description: "This elegant maroon straight-cut kurti features intricate silver embroidery around the neckline and cuffs. Made from premium silk fabric, it offers a comfortable fit and timeless appeal. Perfect for festive occasions, office wear, and special events. The beautiful detailing adds a touch of sophistication to your ethnic wardrobe.",
+    styleNotes: "Pair this kurti with light-colored straight pants or palazzos for a balanced look. Silver or gold jewelry will complement the embroidery beautifully. Add a matching dupatta for a complete ethnic ensemble. Perfect for both day and evening occasions.",
+    sizeFit: "This kurti has a straight, relaxed fit that flatters all body types. Length: 46 inches (may vary by size). The three-quarter sleeves add elegance while keeping you comfortable. Please refer to the size chart for accurate measurements before ordering.",
+    material: "Fabric: 100% Premium Silk Blend. The fabric is soft, breathable, and comfortable for all-day wear. Care: Dry clean recommended for best results. Iron on medium heat. Store in a cool, dry place.",
     specifications: {
-      "Fabric": "Silk",
-      "Care Instructions": "Hand Wash",
+      "Fabric": "Silk Blend",
       "Pattern": "Embroidered",
       "Neck": "Round Neck",
       "Sleeve": "Three-Quarter Sleeves",
+      "Length": "46 inches",
       "Fit": "Straight Fit",
-      "Occasion": "Festive, Casual",
+      "Occasion": "Festive, Office, Casual",
+      "Wash Care": "Dry Clean Only",
     },
+    rating: 4.5,
+    reviewCount: 128,
+    inStock: true,
   };
-
-  // Use WooCommerce product data if available, otherwise use default
-  const product = wooProduct
-    ? {
-        title: wooProduct.name || defaultProduct.title,
-        sku: wooProduct.sku || defaultProduct.sku,
-        originalPrice: parseFloat(wooProduct.regular_price || "0") * 100,
-        discountedPrice: parseFloat(wooProduct.sale_price || wooProduct.regular_price || "0") * 100,
-        discountPercent: wooProduct.sale_price
-          ? Math.round(
-              ((parseFloat(wooProduct.regular_price) - parseFloat(wooProduct.sale_price)) /
-                parseFloat(wooProduct.regular_price)) *
-                100
-            )
-          : 0,
-        images:
-          wooProduct.images?.map((img: any) => img.src) || defaultProduct.images,
-        sizes: wooProduct.attributes?.find((attr: any) => attr.name === "Size")?.options || defaultProduct.sizes,
-        description: wooProduct.description || defaultProduct.description,
-        styleNotes: wooProduct.short_description || defaultProduct.styleNotes,
-        sizeFit: defaultProduct.sizeFit,
-        material: defaultProduct.material,
-        specifications: defaultProduct.specifications,
-      }
-    : defaultProduct;
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({
@@ -90,420 +78,503 @@ export default function ProductDetailPage() {
   };
 
   const handlePincodeCheck = () => {
-    // Handle pincode check logic here
-    console.log("Checking delivery for pincode:", pincode);
+    alert(`Checking delivery for pincode: ${pincode}`);
   };
 
-  const handleAddToCart = async () => {
-    if (wooProduct?.id) {
-      try {
-        const response = await fetch("/api/woocommerce/cart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            product_id: wooProduct.id,
-            quantity: 1,
-          }),
-        });
-        const result = await response.json();
-        if (response.ok) {
-          alert("Product added to cart!");
-        } else {
-          alert("Failed to add to cart: " + (result.error || "Unknown error"));
-        }
-      } catch (error) {
-        alert("Failed to add to cart. Please try again.");
-      }
-    } else {
-      alert("Product added to cart! (Demo mode)");
-    }
+  const handleAddToCart = () => {
+    addToCart({
+      id: `${product.id}-${selectedSize}`,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.images[0],
+      size: selectedSize,
+      quantity: quantity,
+    });
+
+    // Show notification
+    setShowAddedNotification(true);
+    setTimeout(() => setShowAddedNotification(false), 2000);
+    
+    // Open cart sidebar
+    setIsCartOpen(true);
   };
 
-  if (productLoading && productId) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="container mx-auto px-4 py-16 text-center">
-          <p className="text-gray-600">Loading product...</p>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const handleBuyNow = () => {
+    // Add to cart first
+    addToCart({
+      id: `${product.id}-${selectedSize}`,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.images[0],
+      size: selectedSize,
+      quantity: quantity,
+    });
+    
+    // Redirect to checkout
+    router.push("/checkout");
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
 
-      <main>
-        {/* Breadcrumb */}
-        <div className="bg-white border-b">
-          <div className="container mx-auto px-4 py-3">
-            <nav className="text-sm text-gray-600">
-              <Link href="/" className="hover:text-pink-600">
-                Home
-              </Link>
-              <span className="mx-2">/</span>
-              <Link href="/kurti" className="hover:text-pink-600">
-                Kurta And Kurtis for Women
-              </Link>
-              <span className="mx-2">/</span>
-              <span className="text-gray-800">Maroon Embroidered...</span>
-            </nav>
-          </div>
-        </div>
+      <main className="container mx-auto px-4 py-6 overflow-x-hidden">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 text-sm mb-6">
+          <Link href="/" className="text-gray-600 hover:text-pink-600">
+            Home
+          </Link>
+          <span className="text-gray-400">/</span>
+          <Link href={`/${product.category.toLowerCase()}`} className="text-gray-600 hover:text-pink-600">
+            {product.category}
+          </Link>
+          <span className="text-gray-400">/</span>
+          <span className="text-gray-900 font-medium line-clamp-1">{product.name}</span>
+        </nav>
 
-        {/* Product Detail Section */}
-        <section className="py-8 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Left Side - Product Images */}
-              <div className="space-y-4">
-                {product.images.map((image, index) => (
-                  <div
-                    key={index}
-                    className="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-gray-100"
-                  >
-                    <Image
-                      src={image}
-                      alt={`${product.title} - Image ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      priority={index === 0}
-                    />
-                  </div>
+        {/* Product Section */}
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Left Side - Image Gallery */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 group">
+              <Image
+                src={product.images[selectedImage]}
+                alt={product.name}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                priority
+              />
+              
+              {/* Discount Badge */}
+              <span className="absolute top-4 left-4 bg-pink-600 text-white text-sm font-semibold px-3 py-1 rounded-lg">
+                -{product.discount}%
+              </span>
+
+              {/* Wishlist Button */}
+              <button
+                onClick={() => setIsWishlisted(!isWishlisted)}
+                className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                  isWishlisted ? 'bg-pink-600 text-white' : 'bg-white text-gray-700 hover:bg-pink-600 hover:text-white'
+                } shadow-lg`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill={isWishlisted ? "currentColor" : "none"}
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </button>
+
+              {/* Image Navigation Arrows */}
+              <button
+                onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : product.images.length - 1)}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setSelectedImage(prev => prev < product.images.length - 1 ? prev + 1 : 0)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Thumbnail Images */}
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {product.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  onMouseEnter={() => setSelectedImage(index)}
+                  className={`relative w-20 h-24 flex-shrink-0 rounded-lg overflow-hidden transition-all ${
+                    selectedImage === index
+                      ? 'ring-2 ring-pink-600 ring-offset-2'
+                      : 'opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <Image
+                    src={image}
+                    alt={`${product.name} - View ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Side - Product Details */}
+          <div className="space-y-6">
+            {/* Product Title & Rating */}
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                {product.name}
+              </h1>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <svg
+                      key={i}
+                      className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                  <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
+                </div>
+                <span className="text-sm text-gray-500">({product.reviewCount} Reviews)</span>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">SKU: {product.sku}</p>
+            </div>
+
+            {/* Pricing */}
+            <div className="flex items-baseline gap-3 pb-4 border-b">
+              <span className="text-3xl font-bold text-gray-900">
+                ₹{product.price.toLocaleString()}
+              </span>
+              <span className="text-xl text-gray-500 line-through">
+                ₹{product.originalPrice.toLocaleString()}
+              </span>
+              <span className="text-lg font-semibold text-green-600">
+                {product.discount}% Off
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 -mt-2">Inclusive of all taxes</p>
+
+            {/* Color Selection */}
+            <div>
+              <label className="text-sm font-semibold text-gray-900 mb-3 block">
+                COLOR: <span className="font-normal text-gray-600">{product.colors[selectedColor].name}</span>
+              </label>
+              <div className="flex gap-3">
+                {product.colors.map((color, index) => (
+                  <button
+                    key={color.name}
+                    onClick={() => setSelectedColor(index)}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                      selectedColor === index
+                        ? 'border-pink-600 ring-2 ring-pink-600 ring-offset-2'
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    style={{ backgroundColor: color.hex }}
+                    title={color.name}
+                  />
                 ))}
               </div>
+            </div>
 
-              {/* Right Side - Product Details */}
-              <div className="space-y-6">
-                {/* Product Title */}
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    {product.title}
-                  </h1>
-                  <p className="text-gray-600 text-sm">SKU: {product.sku}</p>
-                </div>
-
-                {/* Pricing */}
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-bold text-gray-900">
-                    ₹{product.discountedPrice.toLocaleString()}
-                  </span>
-                  <span className="text-xl text-gray-500 line-through">
-                    ₹{product.originalPrice.toLocaleString()}
-                  </span>
-                  <span className="text-lg font-semibold text-pink-600">
-                    {product.discountPercent}% Off
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">Inclusive Of All Taxes</p>
-
-                {/* Size Selection */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-semibold text-gray-900">
-                      Size:
-                    </label>
-                    <Link
-                      href="#size-chart"
-                      className="text-sm text-pink-600 hover:underline"
-                    >
-                      View Size Chart
-                    </Link>
-                  </div>
-                  <div className="flex gap-3 flex-wrap">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`w-12 h-12 rounded-full border-2 font-semibold transition-all ${
-                          selectedSize === size
-                            ? "bg-purple-600 text-white border-purple-600"
-                            : "bg-white text-gray-700 border-gray-300 hover:border-purple-400"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Add to Cart Button */}
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full bg-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-purple-700 transition-colors uppercase"
-                >
-                  ADD TO CART
+            {/* Size Selection */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-sm font-semibold text-gray-900">
+                  SIZE: <span className="font-normal text-gray-600">{selectedSize}</span>
+                </label>
+                <button className="text-sm text-pink-600 hover:underline font-medium">
+                  Size Guide
                 </button>
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                {product.sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`w-14 h-10 rounded-lg border-2 font-medium text-sm transition-all ${
+                      selectedSize === size
+                        ? "bg-pink-600 text-white border-pink-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-pink-400"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-                {/* Delivery Information */}
-                <div className="border-t pt-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Delivery For
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Enter your Pincode"
-                        value={pincode}
-                        onChange={(e) => setPincode(e.target.value)}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <button
-                        onClick={handlePincodeCheck}
-                        className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors font-semibold"
-                      >
-                        CHECK
-                      </button>
-                    </div>
-                  </div>
+            {/* Quantity */}
+            <div>
+              <label className="text-sm font-semibold text-gray-900 mb-3 block">QUANTITY</label>
+              <div className="flex items-center gap-1 w-fit border border-gray-300 rounded-lg">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                  </svg>
+                </button>
+                <span className="w-12 text-center font-medium">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-r-lg transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+            </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="w-6 h-6 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-sm text-gray-700">
-                        Express Shipping
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="w-6 h-6 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-sm text-gray-700">
-                        Cash on Delivery Available
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="w-6 h-6 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-sm text-gray-700">
-                        Easy 7 Days Return Policy
-                      </span>
-                    </div>
-                  </div>
-                </div>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-white text-pink-600 border-2 border-pink-600 py-4 px-6 rounded-lg font-semibold text-lg hover:bg-pink-50 transition-colors"
+              >
+                ADD TO CART
+              </button>
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 bg-pink-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-pink-700 transition-colors"
+              >
+                BUY NOW
+              </button>
+            </div>
 
-                {/* Collapsible Sections */}
-                <div className="border-t pt-6 space-y-2">
-                  {/* Description */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection("description")}
-                      className="w-full flex items-center justify-between py-4 text-left"
-                    >
-                      <span className="font-semibold text-gray-900">
-                        DESCRIPTION
-                      </span>
-                      <svg
-                        className={`w-5 h-5 text-gray-600 transition-transform ${
-                          openSections.description ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {openSections.description && (
-                      <div className="pb-4 text-gray-600">
-                        {product.description}
-                      </div>
-                    )}
-                  </div>
+            {/* Delivery Check */}
+            <div className="bg-gray-50 rounded-xl p-4">
+              <label className="text-sm font-semibold text-gray-900 mb-3 block">
+                CHECK DELIVERY
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter Pincode"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  maxLength={6}
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+                />
+                <button
+                  onClick={handlePincodeCheck}
+                  className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                >
+                  CHECK
+                </button>
+              </div>
+            </div>
 
-                  {/* Style Notes */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection("styleNotes")}
-                      className="w-full flex items-center justify-between py-4 text-left"
-                    >
-                      <span className="font-semibold text-gray-900">
-                        STYLE NOTES
-                      </span>
-                      <svg
-                        className={`w-5 h-5 text-gray-600 transition-transform ${
-                          openSections.styleNotes ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {openSections.styleNotes && (
-                      <div className="pb-4 text-gray-600">
-                        {product.styleNotes}
-                      </div>
-                    )}
-                  </div>
+            {/* Features */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y">
+              <div className="flex flex-col items-center text-center gap-2">
+                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+                <span className="text-xs text-gray-600">Free Shipping</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span className="text-xs text-gray-600">7 Days Return</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span className="text-xs text-gray-600">COD Available</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span className="text-xs text-gray-600">Secure Payment</span>
+              </div>
+            </div>
 
-                  {/* Size & Fit */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection("sizeFit")}
-                      className="w-full flex items-center justify-between py-4 text-left"
-                    >
-                      <span className="font-semibold text-gray-900">
-                        SIZE & FIT
-                      </span>
-                      <svg
-                        className={`w-5 h-5 text-gray-600 transition-transform ${
-                          openSections.sizeFit ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {openSections.sizeFit && (
-                      <div className="pb-4 text-gray-600">
-                        {product.sizeFit}
-                      </div>
-                    )}
+            {/* Collapsible Sections */}
+            <div className="space-y-0">
+              {/* Description */}
+              <div className="border-b">
+                <button
+                  onClick={() => toggleSection("description")}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                    Description
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.description ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openSections.description && (
+                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                    {product.description}
                   </div>
+                )}
+              </div>
 
-                  {/* Material */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection("material")}
-                      className="w-full flex items-center justify-between py-4 text-left"
-                    >
-                      <span className="font-semibold text-gray-900">
-                        MATERIAL
-                      </span>
-                      <svg
-                        className={`w-5 h-5 text-gray-600 transition-transform ${
-                          openSections.material ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {openSections.material && (
-                      <div className="pb-4 text-gray-600">
-                        {product.material}
-                      </div>
-                    )}
+              {/* Style Notes */}
+              <div className="border-b">
+                <button
+                  onClick={() => toggleSection("styleNotes")}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                    Style Notes
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.styleNotes ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openSections.styleNotes && (
+                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                    {product.styleNotes}
                   </div>
+                )}
+              </div>
 
-                  {/* Specifications */}
-                  <div className="border-b">
-                    <button
-                      onClick={() => toggleSection("specifications")}
-                      className="w-full flex items-center justify-between py-4 text-left"
-                    >
-                      <span className="font-semibold text-gray-900">
-                        SPECIFICATIONS
-                      </span>
-                      <svg
-                        className={`w-5 h-5 text-gray-600 transition-transform ${
-                          openSections.specifications ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {openSections.specifications && (
-                      <div className="pb-4">
-                        <dl className="space-y-2">
-                          {Object.entries(product.specifications).map(
-                            ([key, value]) => (
-                              <div
-                                key={key}
-                                className="flex justify-between border-b pb-2"
-                              >
-                                <dt className="font-medium text-gray-700">
-                                  {key}:
-                                </dt>
-                                <dd className="text-gray-600">{value}</dd>
-                              </div>
-                            )
-                          )}
-                        </dl>
-                      </div>
-                    )}
+              {/* Size & Fit */}
+              <div className="border-b">
+                <button
+                  onClick={() => toggleSection("sizeFit")}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                    Size & Fit
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.sizeFit ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openSections.sizeFit && (
+                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                    {product.sizeFit}
                   </div>
-                </div>
+                )}
+              </div>
+
+              {/* Material & Care */}
+              <div className="border-b">
+                <button
+                  onClick={() => toggleSection("material")}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                    Material & Care
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.material ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openSections.material && (
+                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                    {product.material}
+                  </div>
+                )}
+              </div>
+
+              {/* Specifications */}
+              <div className="border-b">
+                <button
+                  onClick={() => toggleSection("specifications")}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                    Specifications
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.specifications ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openSections.specifications && (
+                  <div className="pb-4">
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                      {Object.entries(product.specifications).map(([key, value]) => (
+                        <div key={key} className="contents">
+                          <dt className="text-gray-500">{key}</dt>
+                          <dd className="text-gray-900">{value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                )}
               </div>
             </div>
           </div>
+        </div>
+
+        {/* You May Also Like Section */}
+        <section className="mt-16 pb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">You May Also Like</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {[1, 2, 3, 4].map((item) => (
+              <Link key={item} href={`/product/${item}`} className="group">
+                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-100 mb-3">
+                  <Image
+                    src={`https://images.unsplash.com/photo-${1594633312681 + item * 1000}-425c7b97ccd1?w=400&h=600&fit=crop&q=80`}
+                    alt={`Related Product ${item}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <h3 className="text-sm font-medium text-gray-900 group-hover:text-pink-600 line-clamp-2">
+                  Elegant Designer Kurti
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="font-bold text-gray-900">₹1,199</span>
+                  <span className="text-sm text-gray-500 line-through">₹1,899</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </section>
       </main>
+
+      {/* Added to Cart Notification */}
+      {showAddedNotification && (
+        <div className="fixed top-24 right-4 z-[60] animate-in slide-in-from-top">
+          <div className="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-medium">Added to cart!</span>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
   );
 }
-

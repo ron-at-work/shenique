@@ -7,10 +7,11 @@ import woocommerce from '@/lib/woocommerce';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const customer = await woocommerce.getCustomer(params.id);
+    const { id } = await params;
+    const customer = await woocommerce.getCustomer(id);
     return NextResponse.json(customer);
   } catch (error: any) {
     return NextResponse.json(
@@ -26,11 +27,12 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const customer = await woocommerce.updateCustomer(params.id, body);
+    const customer = await woocommerce.updateCustomer(id, body);
     return NextResponse.json(customer);
   } catch (error: any) {
     return NextResponse.json(
@@ -46,13 +48,14 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
     const force = searchParams.get('force') === 'true';
     
-    await woocommerce.deleteCustomer(params.id, force);
+    await woocommerce.deleteCustomer(id, force);
     return NextResponse.json({ success: true, message: 'Customer deleted' });
   } catch (error: any) {
     return NextResponse.json(
@@ -61,4 +64,3 @@ export async function DELETE(
     );
   }
 }
-
