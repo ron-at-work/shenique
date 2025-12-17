@@ -1,20 +1,21 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCart } from "@/lib/context/CartContext";
+import { useAuth } from "@/lib/context/AuthContext";
 import { useProduct, useProducts } from "@/lib/hooks/useWooCommerce";
 import HtmlRenderer from "@/components/HtmlRenderer";
+import Header from "@/components/Header";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params?.slug as string;
   const { addToCart, setIsCartOpen } = useCart();
+  const { user } = useAuth();
   const { data: wcProduct, loading, error } = useProduct(slug);
   
   // Fetch all products
@@ -167,6 +168,12 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!product) return;
     
+    // Check if user is logged in
+    if (!user) {
+      router.push('/auth/login?redirect=/product/' + slug);
+      return;
+    }
+    
     const cartItem: any = {
       id: `${product.id}${product.sizes && product.sizes.length > 0 ? `-${selectedSize}` : ''}`,
       name: product.name,
@@ -192,6 +199,12 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     if (!product) return;
+    
+    // Check if user is logged in
+    if (!user) {
+      router.push('/auth/login?redirect=/product/' + slug);
+      return;
+    }
     
     // Add to cart first
     addToCart({
@@ -221,7 +234,6 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -230,7 +242,6 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <div className="min-h-screen bg-white overflow-x-hidden">
-        <Header />
         <main className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
@@ -241,14 +252,12 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <Header />
 
       <main className="container mx-auto px-4 py-6 overflow-x-hidden">
         {/* Breadcrumbs */}
@@ -751,8 +760,6 @@ export default function ProductDetailPage() {
           </div>
         </div>
       )}
-
-      <Footer />
     </div>
   );
 }

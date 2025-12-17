@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { useProducts, useCategories } from "@/lib/hooks/useWooCommerce";
@@ -31,7 +29,6 @@ export default function Home() {
   const categories = categoriesData && Array.isArray(categoriesData)
     ? categoriesData
         .filter((cat: any) => cat.count > 0) // Only show categories with products
-        .slice(0, 2) // Limit to 2 categories
         .map((cat: any) => ({
           name: cat.name,
           image: cat.image?.src || defaultCategories[0].image,
@@ -148,10 +145,7 @@ export default function Home() {
 
   // Banner carousel images
   const bannerImages = [
-    {
-      src: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=1920&h=1080&fit=crop&q=80",
-      alt: "Elegant Kurti Collection"
-    },
+   
     {
       src: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=1920&h=1080&fit=crop&q=80",
       alt: "Traditional Wear"
@@ -160,10 +154,7 @@ export default function Home() {
       src: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=1920&h=1080&fit=crop&q=80",
       alt: "Festive Collection"
     },
-    {
-      src: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=1920&h=1080&fit=crop&q=80",
-      alt: "Winter Woolen Kurtis"
-    },
+   
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -182,10 +173,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      {/* Fixed Header */}
-      <Header transparent />
-      
-      {/* Hero Carousel Section - full screen behind fixed header */}
+      {/* Hero Carousel Section - below header */}
       <section className="relative w-full h-screen">
 
         {/* Carousel Images */}
@@ -238,7 +226,7 @@ export default function Home() {
                 <p className="text-gray-600">Loading categories...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-2xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {categories.map((category: any) => (
                   <Link
                     key={category.id || category.name}
@@ -454,8 +442,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

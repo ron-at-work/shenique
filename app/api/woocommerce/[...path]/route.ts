@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * GET /api/woocommerce/products
  * GET /api/woocommerce/products/123
  * GET /api/woocommerce/products?slug=product-slug
- * GET /api/woocommerce/categories
+ * GET /api/woocommerce/products/categories
  * POST /api/woocommerce/orders
  * PUT /api/woocommerce/products/123
  * DELETE /api/woocommerce/products/123?force=true

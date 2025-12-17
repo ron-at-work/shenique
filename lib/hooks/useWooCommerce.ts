@@ -164,7 +164,7 @@ export function useCategories(options: UseWooCommerceOptions = {}) {
     async function fetchCategories() {
       try {
         setLoading(true);
-        const response = await fetch('/api/woocommerce/categories');
+        const response = await fetch('/api/woocommerce/products/categories');
         const result = await response.json();
         
         if (!response.ok) {

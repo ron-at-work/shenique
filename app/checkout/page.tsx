@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/lib/context/CartContext";
 
 export default function CheckoutPage() {
-  const { cartItems, cartTotal, cartOriginalTotal, cartItemsCount, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, cartTotal, cartOriginalTotal, cartItemsCount, updateQuantity, removeFromCart, clearCart } = useCart();
   
   const [step, setStep] = useState(1); // 1: Address, 2: Payment, 3: Confirmation
   const [isProcessing, setIsProcessing] = useState(false);
@@ -91,23 +89,52 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Generate order ID
-    const newOrderId = "SHN" + Date.now().toString().slice(-8);
-    setOrderId(newOrderId);
-    setOrderPlaced(true);
-    setStep(3);
-    setIsProcessing(false);
-    window.scrollTo(0, 0);
+    try {
+      // Create order via WooCommerce API
+      const response = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          shippingAddress,
+          paymentMethod,
+          cartItems,
+          cartTotal,
+          shippingCost,
+          couponDiscount: couponApplied ? couponDiscount : 0,
+          couponCode: couponApplied ? couponCode : '',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to place order');
+      }
+
+      // Order created successfully
+      const orderNumber = data.order?.orderNumber || data.order?.id || "SHN" + Date.now().toString().slice(-8);
+      setOrderId(orderNumber.toString());
+      setOrderPlaced(true);
+      setStep(3);
+      
+      // Clear cart after successful order
+      clearCart();
+      
+    } catch (error: any) {
+      console.error('Order placement error:', error);
+      alert(error.message || 'Failed to place order. Please try again.');
+    } finally {
+      setIsProcessing(false);
+      window.scrollTo(0, 0);
+    }
   };
 
   // Order Confirmation View
   if (orderPlaced) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto text-center">
             {/* Success Animation */}
@@ -187,7 +214,6 @@ export default function CheckoutPage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -196,7 +222,6 @@ export default function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <main className="container mx-auto px-4 py-16 text-center">
           <div className="max-w-md mx-auto">
             <svg className="w-24 h-24 text-gray-300 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,14 +237,12 @@ export default function CheckoutPage() {
             </Link>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      <Header />
 
       <main className="container mx-auto px-4 py-6">
         {/* Breadcrumbs */}
@@ -271,7 +294,7 @@ export default function CheckoutPage() {
                       name="firstName"
                       value={shippingAddress.firstName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="Enter first name"
                     />
                   </div>
@@ -282,7 +305,7 @@ export default function CheckoutPage() {
                       name="lastName"
                       value={shippingAddress.lastName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="Enter last name"
                     />
                   </div>
@@ -293,7 +316,7 @@ export default function CheckoutPage() {
                       name="email"
                       value={shippingAddress.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="Enter email address"
                     />
                   </div>
@@ -305,7 +328,7 @@ export default function CheckoutPage() {
                       value={shippingAddress.phone}
                       onChange={handleInputChange}
                       maxLength={10}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="10-digit mobile number"
                     />
                   </div>
@@ -316,7 +339,7 @@ export default function CheckoutPage() {
                       name="address"
                       value={shippingAddress.address}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="House no., Building, Street, Area"
                     />
                   </div>
@@ -327,7 +350,7 @@ export default function CheckoutPage() {
                       name="apartment"
                       value={shippingAddress.apartment}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="Apartment, suite, unit, etc."
                     />
                   </div>
@@ -338,7 +361,7 @@ export default function CheckoutPage() {
                       name="city"
                       value={shippingAddress.city}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="Enter city"
                     />
                   </div>
@@ -348,7 +371,7 @@ export default function CheckoutPage() {
                       name="state"
                       value={shippingAddress.state}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white text-gray-900"
                     >
                       <option value="">Select State</option>
                       <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -376,7 +399,7 @@ export default function CheckoutPage() {
                       value={shippingAddress.pincode}
                       onChange={handleInputChange}
                       maxLength={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900 placeholder:text-gray-900"
                       placeholder="6-digit pincode"
                     />
                   </div>
@@ -634,7 +657,6 @@ export default function CheckoutPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

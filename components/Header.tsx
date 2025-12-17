@@ -4,15 +4,30 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/lib/context/CartContext";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface HeaderProps {
   transparent?: boolean;
+}
+
+interface Coupon {
+  id: number;
+  code: string;
+  amount: string;
+  discount_type: string;
+  description: string;
+  minimum_amount?: string;
 }
 
 export default function Header({ transparent = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loadingCoupons, setLoadingCoupons] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const { user, logout, loading: authLoading } = useAuth();
   const { 
     cartItems, 
     isCartOpen, 
@@ -36,17 +51,49 @@ export default function Header({ transparent = false }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fetch coupons when cart opens
+  useEffect(() => {
+    if (isCartOpen && cartItems.length > 0) {
+      fetchCoupons();
+    }
+  }, [isCartOpen, cartItems.length]);
+
+  const fetchCoupons = async () => {
+    try {
+      setLoadingCoupons(true);
+      const response = await fetch('/api/woocommerce/coupons?status=active&per_page=10');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCoupons(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    } finally {
+      setLoadingCoupons(false);
+    }
+  };
+
+  const handleApplyCoupon = (coupon: Coupon) => {
+    setAppliedCoupon(coupon);
+    setCouponCode(coupon.code);
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
+
   const categories = [
     "Kurti",
     "Woolen Kurti",
   ];
 
   // Dynamic classes based on scroll state
-  // Initial: transparent (home) or white (PLP)
-  // On scroll: dark shade for both
-  const textColor = isScrolled ? 'text-white' : (transparent ? 'text-white' : 'text-gray-700');
-  const hoverColor = isScrolled ? 'hover:text-pink-300' : (transparent ? 'hover:text-pink-300' : 'hover:text-pink-600');
-  const borderColor = isScrolled ? 'border-white/30' : (transparent ? 'border-white/30' : 'border-gray-200');
+  // Always white background, so always use dark text
+  const textColor = 'text-gray-700';
+  const hoverColor = 'hover:text-pink-600';
+  const borderColor = 'border-gray-200';
 
   return (
     <>
@@ -61,7 +108,7 @@ export default function Header({ transparent = false }: HeaderProps) {
         </div>
 
         {/* Main Header */}
-        <header className={`transition-all duration-300 ${isScrolled ? 'bg-black/40 backdrop-blur-sm' : (transparent ? 'bg-transparent' : 'bg-white')}`}>
+        <header className="bg-white transition-all duration-300 p-3">
         <div className="container mx-auto px-4">
           {/* Top Bar */}
           <div className={`flex items-center justify-between py-4 ${borderColor} relative`}>
@@ -78,7 +125,7 @@ export default function Header({ transparent = false }: HeaderProps) {
               </Link>
               <Link
                 href="/new-arrivals"
-                className={`${isScrolled || transparent ? 'text-yellow-300 hover:text-yellow-200' : 'text-pink-600 hover:text-pink-700'} font-medium transition-colors duration-300`}
+                className="text-pink-600 hover:text-pink-700 font-medium transition-colors duration-300"
               >
                 New Arrivals
               </Link>
@@ -87,30 +134,71 @@ export default function Header({ transparent = false }: HeaderProps) {
             {/* Center Logo */}
             <Link href="/" className="absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center group py-3 pointer-events-auto z-0">
               {/* Main Brand Name - Full Cursive */}
-              <span className={`text-3xl md:text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r ${isScrolled || transparent ? 'from-white via-pink-200 to-white' : 'from-pink-600 via-pink-500 to-pink-600'} bg-clip-text text-transparent drop-shadow-sm transition-all duration-300`}>
+              <span className="text-3xl md:text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm transition-all duration-300">
                 Shenique
               </span>
               {/* Decorative Line with Tagline */}
-              <div className={`flex items-center gap-2 -mt-0.5`}>
-                <div className={`w-6 h-px ${isScrolled || transparent ? 'bg-pink-300' : 'bg-pink-400'} transition-all duration-300`}></div>
-                <span className={`${isScrolled || transparent ? 'text-pink-400' : 'text-pink-500'}`}>✦</span>
-                <span className={`text-[8px] tracking-[0.15em] italic font-(family-name:--font-playfair) ${isScrolled || transparent ? 'text-pink-200' : 'text-gray-500'} transition-colors duration-300`}>
+              <div className="flex items-center gap-2 -mt-0.5">
+                <div className="w-6 h-px bg-pink-400 transition-all duration-300"></div>
+                <span className="text-pink-500">✦</span>
+                <span className="text-[8px] tracking-[0.15em] italic font-(family-name:--font-playfair) text-gray-500 transition-colors duration-300">
                   Grace in Every Curve
                 </span>
-                <span className={`${isScrolled || transparent ? 'text-pink-400' : 'text-pink-500'}`}>✦</span>
-                <div className={`w-6 h-px ${isScrolled || transparent ? 'bg-pink-300' : 'bg-pink-400'} transition-all duration-300`}></div>
+                <span className="text-pink-500">✦</span>
+                <div className="w-6 h-px bg-pink-400 transition-all duration-300"></div>
               </div>
             </Link>
 
             {/* Right Nav */}
             <div className="flex items-center gap-4 relative z-20 pointer-events-auto">
               {/* User Menu */}
-              <Link
-                href="/auth/login"
-                className={`${textColor} ${hoverColor} text-sm cursor-pointer hover:underline`}
-              >
-                Log In
-              </Link>
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className={`${textColor} ${hoverColor} text-sm cursor-pointer hover:underline flex items-center gap-1`}
+                  >
+                    {user.displayName || user.name || user.email}
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <Link
+                        href="/account"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        My Account
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        My Orders
+                      </Link>
+                      <button
+                        onClick={async () => {
+                          await logout();
+                          setShowUserMenu(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className={`${textColor} ${hoverColor} text-sm cursor-pointer hover:underline`}
+                >
+                  Log In
+                </Link>
+              )}
               <Link
                 href="/rewards"
                 className={`${textColor} ${hoverColor} text-sm`}
@@ -353,16 +441,79 @@ export default function Header({ transparent = false }: HeaderProps) {
               {/* Cart Footer */}
               {cartItems.length > 0 && (
                 <div className="border-t p-3 space-y-3 bg-white shrink-0">
+                  {/* Available Coupons */}
+                  {coupons.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-gray-700">Available Offers</p>
+                      <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                        {loadingCoupons ? (
+                          <div className="text-xs text-gray-500 text-center py-2">Loading offers...</div>
+                        ) : (
+                          coupons.map((coupon) => {
+                            const isApplied = appliedCoupon?.id === coupon.id;
+                            const discountText = coupon.discount_type === 'percent' 
+                              ? `${coupon.amount}% OFF`
+                              : `₹${coupon.amount} OFF`;
+                            
+                            return (
+                              <button
+                                key={coupon.id}
+                                onClick={() => isApplied ? handleRemoveCoupon() : handleApplyCoupon(coupon)}
+                                className={`w-full text-left p-2 rounded-lg border text-xs transition-colors ${
+                                  isApplied
+                                    ? 'border-pink-500 bg-pink-50 text-pink-700'
+                                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-pink-300 hover:bg-pink-50'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium truncate">{coupon.code}</p>
+                                    <p className="text-xs text-gray-600 truncate">{coupon.description || discountText}</p>
+                                  </div>
+                                  <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${
+                                    isApplied ? 'bg-pink-600 text-white' : 'bg-pink-100 text-pink-700'
+                                  }`}>
+                                    {discountText}
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Coupon Input */}
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      placeholder="Coupon code"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
                     />
-                    <button className="px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                      Apply
-                    </button>
+                    {appliedCoupon ? (
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          const coupon = coupons.find(c => c.code.toLowerCase() === couponCode.toLowerCase());
+                          if (coupon) {
+                            handleApplyCoupon(coupon);
+                          }
+                        }}
+                        disabled={!couponCode}
+                        className="px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                      >
+                        Apply
+                      </button>
+                    )}
                   </div>
 
                   {/* Price Summary - Compact */}
@@ -426,8 +577,8 @@ export default function Header({ transparent = false }: HeaderProps) {
         </header>
       </div>
       
-      {/* Spacer for fixed header on non-transparent pages */}
-      {!transparent && <div className="h-[90px]" />}
+      {/* Spacer for fixed header */}
+      <div className="h-[90px]" />
     </>
   );
 }

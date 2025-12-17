@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { useProducts, useCategories } from "@/lib/hooks/useWooCommerce";
+import { applyFiltersAndSort, getTotalSelectedFilters, type FilterState, type SortOption } from "@/lib/utils/productFilters";
 
 // Filter options data
 const filterOptions = {
@@ -193,7 +192,7 @@ export default function KurtiPage() {
   );
   
   // Products are already filtered by category from API
-  const products = Array.isArray(productsData) ? productsData : [];
+  const rawProducts = Array.isArray(productsData) ? productsData : [];
 
   const [openFilters, setOpenFilters] = useState({
     size: true,
@@ -248,11 +247,15 @@ export default function KurtiPage() {
     });
   };
 
-  const totalSelectedFilters = Object.values(selectedFilters).flat().length;
+  // Apply filters and sorting to products
+  const products = useMemo(() => {
+    return applyFiltersAndSort(rawProducts, selectedFilters, sortBy as SortOption, filterOptions.price);
+  }, [rawProducts, selectedFilters, sortBy]);
+
+  const totalSelectedFilters = getTotalSelectedFilters(selectedFilters);
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <Header />
 
       <main className="container mx-auto px-4 py-3">
         {/* Breadcrumbs */}
@@ -476,7 +479,12 @@ export default function KurtiPage() {
                 {productsLoading ? (
                   <span className="font-semibold text-gray-900">Loading...</span>
                 ) : (
-                  <span className="font-semibold text-gray-900">{products.length}</span>
+                  <>
+                    <span className="font-semibold text-gray-900">{products.length}</span>
+                    {totalSelectedFilters > 0 && rawProducts.length !== products.length && (
+                      <span className="text-gray-500"> of {rawProducts.length}</span>
+                    )}
+                  </>
                 )}{' '}products
               </p>
 
@@ -637,7 +645,6 @@ export default function KurtiPage() {
         </div>
       )}
 
-      <Footer />
     </div>
   );
 }

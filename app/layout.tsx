@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/context/CartContext";
+import { AuthProvider } from "@/lib/context/AuthContext";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,9 +42,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${dancingScript.variable} antialiased`}
       >
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

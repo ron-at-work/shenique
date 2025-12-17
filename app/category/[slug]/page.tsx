@@ -2,11 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { useProducts, useCategories } from "@/lib/hooks/useWooCommerce";
+import { applyFiltersAndSort, getTotalSelectedFilters, type FilterState, type SortOption } from "@/lib/utils/productFilters";
 
 // Filter options data
 const filterOptions = {
@@ -188,7 +187,7 @@ export default function CategoryPage() {
   );
   
   // Products are already filtered by category from API
-  const products = Array.isArray(productsData) ? productsData : [];
+  const rawProducts = Array.isArray(productsData) ? productsData : [];
 
   const [openFilters, setOpenFilters] = useState({
     size: true,
@@ -243,19 +242,22 @@ export default function CategoryPage() {
     });
   };
 
-  const totalSelectedFilters = Object.values(selectedFilters).flat().length;
+  // Apply filters and sorting to products
+  const products = useMemo(() => {
+    return applyFiltersAndSort(rawProducts, selectedFilters, sortBy as SortOption, filterOptions.price);
+  }, [rawProducts, selectedFilters, sortBy]);
+
+  const totalSelectedFilters = getTotalSelectedFilters(selectedFilters);
 
   // Loading state
   if (categoriesLoading || !currentCategory) {
     return (
       <div className="min-h-screen bg-white overflow-x-hidden">
-        <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -264,7 +266,6 @@ export default function CategoryPage() {
   if (!currentCategory) {
     return (
       <div className="min-h-screen bg-white overflow-x-hidden">
-        <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Category not found</h1>
@@ -273,14 +274,12 @@ export default function CategoryPage() {
             </Link>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <Header />
 
       <main className="container mx-auto px-4 py-3">
         {/* Breadcrumbs */}
@@ -403,7 +402,12 @@ export default function CategoryPage() {
                 {productsLoading ? (
                   <span className="font-semibold text-gray-900">Loading...</span>
                 ) : (
-                  <span className="font-semibold text-gray-900">{products.length}</span>
+                  <>
+                    <span className="font-semibold text-gray-900">{products.length}</span>
+                    {totalSelectedFilters > 0 && rawProducts.length !== products.length && (
+                      <span className="text-gray-500"> of {rawProducts.length}</span>
+                    )}
+                  </>
                 )}{' '}products
               </p>
 
@@ -535,7 +539,6 @@ export default function CategoryPage() {
         </div>
       )}
 
-      <Footer />
     </div>
   );
 }

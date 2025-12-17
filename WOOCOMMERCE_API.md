@@ -1,6 +1,6 @@
 # WooCommerce API Integration Guide
 
-This document explains how to use the WooCommerce REST API integration in this Next.js application.
+This document exp ains how to use the WooCommerce REST API integration in this Next.js application.
 
 ## Setup
 
@@ -244,12 +244,12 @@ DELETE /api/woocommerce/customers/101?force=true
 
 #### Get All Categories
 ```typescript
-GET /api/woocommerce/categories
+GET /api/woocommerce/products/categories
 ```
 
 #### Get Category by ID
 ```typescript
-GET /api/woocommerce/categories?id=5
+GET /api/woocommerce/products/categories?id=5
 ```
 
 ### Payment Gateways
