@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
+import { useProducts, useCategories } from "@/lib/hooks/useWooCommerce";
 
 // Filter options data
 const filterOptions = {
@@ -37,90 +38,7 @@ const filterOptions = {
   style: ["Casual", "Ethnic", "Indo-Western", "Contemporary", "Traditional"],
 };
 
-// Sample products data for woolen kurtis
-const products = [
-  {
-    id: 1,
-    name: "Maroon Woolen Embroidered Kurti",
-    price: 1899,
-    originalPrice: 2699,
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600&h=900&fit=crop&q=80",
-    isNew: true,
-    discount: 30,
-  },
-  {
-    id: 2,
-    name: "Navy Blue Wool Blend Kurti",
-    price: 1699,
-    originalPrice: 2499,
-    image: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600&h=900&fit=crop&q=80",
-    isNew: true,
-    discount: 32,
-  },
-  {
-    id: 3,
-    name: "Olive Green Woolen Kurti",
-    price: 1599,
-    originalPrice: 2299,
-    image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&h=900&fit=crop&q=80",
-    isNew: true,
-    discount: 30,
-  },
-  {
-    id: 4,
-    name: "Pink Pashmina Woolen Kurti",
-    price: 2199,
-    originalPrice: 3199,
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=900&fit=crop&q=80",
-    isNew: false,
-    discount: 31,
-  },
-  {
-    id: 5,
-    name: "Mustard Knitted Woolen Kurti",
-    price: 1499,
-    originalPrice: 2199,
-    image: "https://images.unsplash.com/photo-1564257577761-4e8938e885a6?w=600&h=900&fit=crop&q=80",
-    isNew: false,
-    discount: 32,
-  },
-  {
-    id: 6,
-    name: "Grey Fleece Winter Kurti",
-    price: 1799,
-    originalPrice: 2599,
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=900&fit=crop&q=80",
-    isNew: true,
-    discount: 31,
-  },
-  {
-    id: 7,
-    name: "Cream Self Design Woolen Kurti",
-    price: 1999,
-    originalPrice: 2899,
-    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=900&fit=crop&q=80",
-    isNew: false,
-    discount: 31,
-  },
-  {
-    id: 8,
-    name: "Black Collared Woolen Kurti",
-    price: 1699,
-    originalPrice: 2499,
-    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=900&fit=crop&q=80",
-    isNew: true,
-    discount: 32,
-  },
-  {
-    id: 9,
-    name: "Rust Embroidered Woolen Kurti",
-    price: 2099,
-    originalPrice: 2999,
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600&h=900&fit=crop&q=80",
-    isNew: false,
-    discount: 30,
-  },
-];
+// Product Card Component - Updated to use WooCommerce data
 
 // Filter Section Component
 function FilterSection({ 
@@ -162,9 +80,16 @@ function FilterSection({
 }
 
 // Product Card Component
-function ProductCard({ product }: { product: typeof products[0] }) {
+function ProductCard({ product }: { product: any }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  const regularPrice = parseFloat(product.regular_price || "0");
+  const salePrice = product.sale_price ? parseFloat(product.sale_price) : null;
+  const finalPrice = salePrice || regularPrice;
+  const discount = salePrice ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0;
+  const image = product.images && product.images.length > 0 ? product.images[0].src : "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600&h=900&fit=crop&q=80";
+  const productSlug = product.slug || product.id;
 
   return (
     <div 
@@ -172,26 +97,28 @@ function ProductCard({ product }: { product: typeof products[0] }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/product/${product.id}`}>
+      <Link href={`/product/${productSlug}`}>
         <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
           <Image
-            src={product.image}
+            src={image}
             alt={product.name}
             fill
             className={`object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
           />
           
           {/* NEW Badge */}
-          {product.isNew && (
+          {product.featured && (
             <span className="absolute top-3 left-3 bg-amber-600 text-white text-xs font-semibold px-3 py-1 rounded">
               NEW
             </span>
           )}
 
           {/* Discount Badge */}
-          <span className="absolute top-3 right-3 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded">
-            -{product.discount}%
-          </span>
+          {discount > 0 && (
+            <span className="absolute top-3 right-3 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded">
+              -{discount}%
+            </span>
+          )}
 
           {/* Wishlist Button */}
           <button
@@ -235,9 +162,13 @@ function ProductCard({ product }: { product: typeof products[0] }) {
           {product.name}
         </h3>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
-          <span className="text-sm text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
-          <span className="text-sm text-green-600 font-medium">({product.discount}% off)</span>
+          <span className="text-lg font-bold text-gray-900">₹{finalPrice.toLocaleString()}</span>
+          {salePrice && (
+            <>
+              <span className="text-sm text-gray-500 line-through">₹{regularPrice.toLocaleString()}</span>
+              <span className="text-sm text-green-600 font-medium">({discount}% off)</span>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -245,6 +176,26 @@ function ProductCard({ product }: { product: typeof products[0] }) {
 }
 
 export default function WoolenKurtiPage() {
+  // Fetch categories first to get category ID
+  const { data: categoriesData } = useCategories();
+  
+  // Find "woolen kurti" category ID
+  const woolenCategory = useMemo(() => {
+    if (!categoriesData || !Array.isArray(categoriesData)) return null;
+    return categoriesData.find((cat: any) => 
+      cat.name?.toLowerCase().includes('woolen') || 
+      cat.slug?.toLowerCase().includes('woolen')
+    );
+  }, [categoriesData]);
+  
+  // Fetch products by category ID (more efficient - server-side filtering)
+  const { data: productsData, loading: productsLoading } = useProducts(
+    woolenCategory?.id ? { categoryId: woolenCategory.id } : {}
+  );
+  
+  // Products are already filtered by category from API
+  const products = Array.isArray(productsData) ? productsData : [];
+
   const [openFilters, setOpenFilters] = useState({
     size: true,
     colors: false,
@@ -523,7 +474,11 @@ export default function WoolenKurtiPage() {
             {/* Products Header */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
               <p className="text-gray-600">
-                <span className="font-semibold text-gray-900">{products.length * 45}</span> products
+                {productsLoading ? (
+                  <span className="font-semibold text-gray-900">Loading...</span>
+                ) : (
+                  <span className="font-semibold text-gray-900">{products.length}</span>
+                )}{' '}products
               </p>
 
               {/* Mobile Filter Button */}
@@ -585,18 +540,21 @@ export default function WoolenKurtiPage() {
             )}
 
             {/* Product Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-
-            {/* Load More Button */}
-            <div className="mt-12 text-center">
-              <button className="px-12 py-3 border-2 border-gray-900 text-gray-900 font-medium rounded-lg hover:bg-gray-900 hover:text-white transition-colors">
-                Load More Products
-              </button>
-            </div>
+            {productsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+              </div>
+            ) : products.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No products found in this category.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                {products.map((product: any) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

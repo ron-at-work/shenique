@@ -42,10 +42,11 @@ class WooCommerceAPI {
 
   private buildUrl(endpoint: string, params: WooCommerceParams = {}): string {
     // Read environment variables at runtime (for server-side API routes)
+    // Try both NEXT_PUBLIC_ and non-prefixed versions for compatibility
     // यह सुनिश्चित करता है कि सभी API calls में consumer_key और consumer_secret शामिल हों
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || this.baseUrl;
-    const consumerKey = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY || this.consumerKey;
-    const consumerSecret = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET || this.consumerSecret;
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || this.baseUrl;
+    const consumerKey = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY || process.env.WORDPRESS_CONSUMER_KEY || this.consumerKey;
+    const consumerSecret = process.env.NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET || process.env.WORDPRESS_CONSUMER_SECRET || this.consumerSecret;
 
     // Validate base URL is set
     if (!baseUrl || baseUrl.trim() === '') {
@@ -442,8 +443,8 @@ class WooCommerceAPI {
    * Get cart (using WooCommerce Store API)
    */
   async getCart(): Promise<any> {
-    // Read environment variable at runtime
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || this.baseUrl;
+    // Read environment variable at runtime - try both NEXT_PUBLIC_ and non-prefixed versions
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || this.baseUrl;
     
     if (!baseUrl || baseUrl.trim() === '') {
       throw new Error('NEXT_PUBLIC_API_BASE_URL is not set. Please add it to your .env.local file');
@@ -470,8 +471,8 @@ class WooCommerceAPI {
    * Add item to cart (using WooCommerce Store API)
    */
   async addToCart(productId: number, quantity: number = 1): Promise<any> {
-    // Read environment variable at runtime
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || this.baseUrl;
+    // Read environment variable at runtime - try both NEXT_PUBLIC_ and non-prefixed versions
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || this.baseUrl;
     
     if (!baseUrl || baseUrl.trim() === '') {
       throw new Error('NEXT_PUBLIC_API_BASE_URL is not set. Please add it to your .env.local file');

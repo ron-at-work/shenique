@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/context/AuthContext";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const { updatePassword, user } = useAuth();
+  // Auth functionality removed - Supabase has been removed from the project
   
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -17,10 +16,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Check if user is authenticated (came from email link)
-  useEffect(() => {
-    // Supabase handles the session from the email link automatically
-  }, []);
+  // Auth functionality removed
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,16 +40,8 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      const { error } = await updatePassword(password);
-
-      if (error) {
-        setError(error.message || "Failed to reset password");
-      } else {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push("/auth/login");
-        }, 3000);
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setError("Password reset is currently unavailable. Please contact support.");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

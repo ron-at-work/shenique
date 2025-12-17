@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/context/AuthContext";
 
 interface FormData {
   firstName: string;
@@ -35,7 +34,7 @@ interface PasswordStrength {
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signUpWithEmail, signInWithGoogle, user } = useAuth();
+  // Auth functionality removed - Supabase has been removed from the project
   
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -58,12 +57,7 @@ export default function SignupPage() {
   });
   const [signupSuccess, setSignupSuccess] = useState(false);
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      router.push('/');
-    }
-  }, [user, router]);
+  // Auth functionality removed
 
   // Calculate password strength
   useEffect(() => {
@@ -189,21 +183,8 @@ export default function SignupPage() {
     setErrors({});
 
     try {
-      const { error } = await signUpWithEmail(
-        formData.email,
-        formData.password,
-        {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone,
-        }
-      );
-
-      if (error) {
-        setErrors({ general: error.message || "Failed to create account" });
-      } else {
-        setSignupSuccess(true);
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setErrors({ general: "Registration is currently unavailable. Please contact support." });
     } catch {
       setErrors({ general: "Something went wrong. Please try again." });
     } finally {
@@ -215,10 +196,8 @@ export default function SignupPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        setErrors({ general: error.message || "Failed to sign in with Google" });
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setErrors({ general: "Authentication is currently unavailable. Please contact support." });
     } catch {
       setErrors({ general: "Failed to sign in with Google" });
     } finally {

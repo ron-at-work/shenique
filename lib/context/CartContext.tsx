@@ -9,7 +9,7 @@ export interface CartItem {
   price: number;
   originalPrice: number;
   image: string;
-  size: string;
+  size?: string; // Optional - only if product has sizes
   quantity: number;
 }
 

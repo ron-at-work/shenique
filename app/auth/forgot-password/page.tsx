@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/lib/context/AuthContext";
 
 type Step = "email" | "success";
 
 export default function ForgotPasswordPage() {
-  const { resetPassword } = useAuth();
+  // Auth functionality removed - Supabase has been removed from the project
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -35,13 +34,8 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const { error } = await resetPassword(email);
-
-      if (error) {
-        setError(error.message || "Failed to send reset link");
-      } else {
-        setStep("success");
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setError("Password reset is currently unavailable. Please contact support.");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

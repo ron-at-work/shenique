@@ -79,3 +79,76 @@ html {
 .fade-in {
   animation-name: fadeIn;
 }
+
+/* HTML Content Renderer Styles */
+.html-content {
+  color: #4b5563; /* text-gray-600 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.6;
+}
+
+.html-content p {
+  margin-bottom: 0.75rem;
+}
+
+.html-content p:last-child {
+  margin-bottom: 0;
+}
+
+.html-content ul,
+.html-content ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.html-content li {
+  margin-bottom: 0.5rem;
+}
+
+.html-content strong,
+.html-content b {
+  font-weight: 600;
+  color: #111827; /* text-gray-900 */
+}
+
+.html-content em,
+.html-content i {
+  font-style: italic;
+}
+
+.html-content h1,
+.html-content h2,
+.html-content h3,
+.html-content h4,
+.html-content h5,
+.html-content h6 {
+  font-weight: 600;
+  color: #111827;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.html-content h1 {
+  font-size: 1.5rem;
+}
+
+.html-content h2 {
+  font-size: 1.25rem;
+}
+
+.html-content h3 {
+  font-size: 1.125rem;
+}
+
+.html-content a {
+  color: #ec4899; /* text-pink-600 */
+  text-decoration: underline;
+}
+
+.html-content a:hover {
+  color: #be185d; /* text-pink-700 */
+}
+
+.html-content br {
+  line-height: 1.6;
+}

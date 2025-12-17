@@ -55,7 +55,7 @@ export default function Home() {
           price: `₹${Math.round(finalPrice).toLocaleString()}`,
           originalPrice: salePrice ? `₹${Math.round(regularPrice).toLocaleString()}` : null,
           image: product.images?.[0]?.src || "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=800&fit=crop&q=80",
-          href: `/product/${product.id}`,
+          href: `/product/${product.slug || product.id}`,
           id: product.id
         };
       })
@@ -313,7 +313,7 @@ export default function Home() {
             </h2>
             {productsLoading ? (
               <div className="text-center py-12">
-                <p className="text-gray-600">Loading products...</p>
+                <p className="text-gray-600">Loading...</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">

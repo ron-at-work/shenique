@@ -4,7 +4,9 @@ This document explains how to use the WooCommerce REST API integration in this N
 
 ## Setup
 
-1. Create a `.env.local` file in the root directory with the following variables:
+### Step 1: Create Environment File
+
+Create a `.env.local` file in the root directory with the following variables:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://shenique.in
@@ -12,9 +14,63 @@ NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY=your_consumer_key_here
 NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET=your_consumer_secret_here
 ```
 
-2. Get your WooCommerce API credentials from:
-   - WordPress Admin → WooCommerce → Settings → Advanced → REST API
-   - Create a new API key with Read/Write permissions
+**Important Notes:**
+- Replace `https://shenique.in` with your actual WordPress/WooCommerce site URL (without trailing slash)
+- The URL should start with `http://` or `https://`
+
+### Step 2: Get WooCommerce API Credentials
+
+1. Log in to your WordPress Admin panel
+2. Go to: **WooCommerce → Settings → Advanced → REST API**
+3. Click **Add Key** button
+4. Fill in:
+   - **Description**: e.g., "Next.js Frontend"
+   - **User**: Select an admin user
+   - **Permissions**: Select **Read/Write** (or at least **Read** for frontend)
+5. Click **Generate API Key**
+6. Copy the **Consumer Key** and **Consumer Secret**
+7. Paste them into your `.env.local` file
+
+### Step 3: Restart Your Server (IMPORTANT!)
+
+**⚠️ CRITICAL:** After creating or updating your `.env.local` file, you MUST restart your Next.js development server for the changes to take effect.
+
+```bash
+# Stop the current server (Ctrl+C)
+# Then restart it:
+npm run dev
+```
+
+**Why?** Next.js only reads environment variables when the server starts. If you don't restart, it will continue using old values or default to localhost.
+
+The application will automatically fetch products, categories, and other data from your WooCommerce store.
+
+### Troubleshooting
+
+**If the API base URL is showing localhost:3000 instead of your WordPress URL:**
+
+1. **Check your `.env.local` file exists** in the root directory (same level as `package.json`)
+2. **Verify the variable names are correct:**
+   ```env
+   NEXT_PUBLIC_API_BASE_URL=https://shenique.in
+   NEXT_PUBLIC_WORDPRESS_CONSUMER_KEY=your_key_here
+   NEXT_PUBLIC_WORDPRESS_CONSUMER_SECRET=your_secret_here
+   ```
+3. **RESTART YOUR SERVER** - This is the most common issue! Next.js only reads `.env.local` when it starts.
+   ```bash
+   # Stop server (Ctrl+C) and restart:
+   npm run dev
+   ```
+4. **Check for typos** - Make sure there are no spaces around the `=` sign
+5. **Verify the URL format** - Should start with `http://` or `https://` and NOT end with a slash
+6. **Check server console** - Look for error messages about missing environment variables
+7. **Verify your WooCommerce site is accessible** - Try opening `https://shenique.in/wp-json/wc/v3/` in your browser
+
+**Other common issues:**
+- Make sure your `.env.local` file is NOT committed to git (it should be in `.gitignore`)
+- Verify that the API credentials are correct
+- Ensure your WooCommerce site has REST API enabled
+- Check browser console and server logs for specific error messages
 
 ## API Routes
 

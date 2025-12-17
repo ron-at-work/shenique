@@ -1,18 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCart } from "@/lib/context/CartContext";
+import { useProduct, useProducts } from "@/lib/hooks/useWooCommerce";
+import HtmlRenderer from "@/components/HtmlRenderer";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params?.slug as string;
   const { addToCart, setIsCartOpen } = useCart();
+  const { data: wcProduct, loading, error } = useProduct(slug);
+  
+  // Fetch all products
+  const { data: allProducts, loading: allProductsLoading } = useProducts();
+  
+  // Filter related products by matching IDs
+  const relatedProducts = useMemo(() => {
+    if (!wcProduct?.related_ids || !Array.isArray(allProducts)) {
+      return [];
+    }
+    
+    const relatedIds = wcProduct.related_ids;
+    
+    // Filter products that match related_ids
+    return allProducts.filter((product: any) => 
+      relatedIds.includes(product.id)
+    );
+  }, [wcProduct?.related_ids, allProducts]);
   
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState(0);
@@ -29,46 +49,109 @@ export default function ProductDetailPage() {
     specifications: false,
   });
 
-  // Product data (in real app, this would come from API based on slug)
-  const product = {
-    id: slug,
-    name: "Maroon Embroidered Silk Straight Kurti",
-    sku: "SHN-KRT-58138",
-    category: "Kurti",
-    price: 1299,
-    originalPrice: 2499,
-    discount: 48,
-    images: [
-      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1564257577761-4e8938e885a6?w=800&h=1200&fit=crop&q=80",
-    ],
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: [
-      { name: "Maroon", hex: "#7F1D1D" },
-      { name: "Navy", hex: "#1E3A5F" },
-      { name: "Green", hex: "#166534" },
-    ],
-    description: "This elegant maroon straight-cut kurti features intricate silver embroidery around the neckline and cuffs. Made from premium silk fabric, it offers a comfortable fit and timeless appeal. Perfect for festive occasions, office wear, and special events. The beautiful detailing adds a touch of sophistication to your ethnic wardrobe.",
-    styleNotes: "Pair this kurti with light-colored straight pants or palazzos for a balanced look. Silver or gold jewelry will complement the embroidery beautifully. Add a matching dupatta for a complete ethnic ensemble. Perfect for both day and evening occasions.",
-    sizeFit: "This kurti has a straight, relaxed fit that flatters all body types. Length: 46 inches (may vary by size). The three-quarter sleeves add elegance while keeping you comfortable. Please refer to the size chart for accurate measurements before ordering.",
-    material: "Fabric: 100% Premium Silk Blend. The fabric is soft, breathable, and comfortable for all-day wear. Care: Dry clean recommended for best results. Iron on medium heat. Store in a cool, dry place.",
-    specifications: {
-      "Fabric": "Silk Blend",
-      "Pattern": "Embroidered",
-      "Neck": "Round Neck",
-      "Sleeve": "Three-Quarter Sleeves",
-      "Length": "46 inches",
-      "Fit": "Straight Fit",
-      "Occasion": "Festive, Office, Casual",
-      "Wash Care": "Dry Clean Only",
-    },
-    rating: 4.5,
-    reviewCount: 128,
-    inStock: true,
-  };
+  // Transform WooCommerce product data to our format
+  const product = useMemo(() => {
+    if (!wcProduct) return null;
+
+    const regularPrice = parseFloat(wcProduct.regular_price || "0");
+    const salePrice = wcProduct.sale_price ? parseFloat(wcProduct.sale_price) : null;
+    const finalPrice = salePrice || regularPrice;
+    const discount = salePrice ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0;
+
+    // Extract images
+    const images = wcProduct.images && wcProduct.images.length > 0
+      ? wcProduct.images.map((img: any) => img.src)
+      : [wcProduct.image?.src || "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=1200&fit=crop&q=80"];
+
+    // Extract attributes (sizes, colors, etc.)
+    const attributes = wcProduct.attributes || [];
+    
+    // Only get sizes if they exist in attributes
+    const sizeAttribute = attributes.find((attr: any) => 
+      attr.name?.toLowerCase() === 'size' || 
+      attr.name?.toLowerCase() === 'pa_size'
+    );
+    const sizes = sizeAttribute?.options && sizeAttribute.options.length > 0 
+      ? sizeAttribute.options 
+      : [];
+    
+    // Only get colors if they exist in attributes
+    const colorAttribute = attributes.find((attr: any) => 
+      attr.name?.toLowerCase() === 'color' || 
+      attr.name?.toLowerCase() === 'pa_color'
+    );
+    const colors = colorAttribute?.options && colorAttribute.options.length > 0
+      ? colorAttribute.options.map((color: string) => {
+          // Map color names to hex codes (you can expand this)
+          const colorMap: Record<string, string> = {
+            "maroon": "#7F1D1D",
+            "navy": "#1E3A5F",
+            "green": "#166534",
+            "red": "#DC2626",
+            "blue": "#2563EB",
+            "pink": "#EC4899",
+            "black": "#171717",
+            "white": "#FFFFFF",
+          };
+          return { name: color, hex: colorMap[color.toLowerCase()] || "#7F1D1D" };
+        })
+      : [];
+
+    // Extract category
+    const category = wcProduct.categories && wcProduct.categories.length > 0
+      ? wcProduct.categories[0].name
+      : "Kurti";
+
+    return {
+      id: wcProduct.id,
+      name: wcProduct.name,
+      sku: wcProduct.sku || `PROD-${wcProduct.id}`,
+      category: category,
+      price: finalPrice,
+      originalPrice: regularPrice,
+      discount: discount,
+      images: images,
+      sizes: sizes,
+      colors: colors,
+      description: wcProduct.description || wcProduct.short_description || null,
+      styleNotes: wcProduct.meta_data?.find((meta: any) => meta.key === 'style_notes')?.value || null,
+      sizeFit: wcProduct.meta_data?.find((meta: any) => meta.key === 'size_fit')?.value || null,
+      material: wcProduct.meta_data?.find((meta: any) => meta.key === 'material')?.value || wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'material')?.options?.[0] || null,
+      specifications: (() => {
+        const specs: Record<string, string> = {};
+        // Only add specifications that have actual data
+        const fabric = wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'fabric')?.options?.[0];
+        if (fabric) specs["Fabric"] = fabric;
+        
+        const pattern = wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'pattern')?.options?.[0];
+        if (pattern) specs["Pattern"] = pattern;
+        
+        const neck = wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'neck')?.options?.[0];
+        if (neck) specs["Neck"] = neck;
+        
+        const sleeve = wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'sleeve')?.options?.[0];
+        if (sleeve) specs["Sleeve"] = sleeve;
+        
+        const length = wcProduct.meta_data?.find((meta: any) => meta.key === 'length')?.value;
+        if (length) specs["Length"] = length;
+        
+        const fit = wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'fit')?.options?.[0];
+        if (fit) specs["Fit"] = fit;
+        
+        const occasion = wcProduct.attributes?.find((attr: any) => attr.name?.toLowerCase() === 'occasion')?.options?.[0];
+        if (occasion) specs["Occasion"] = occasion;
+        
+        const washCare = wcProduct.meta_data?.find((meta: any) => meta.key === 'wash_care')?.value;
+        if (washCare) specs["Wash Care"] = washCare;
+        
+        return specs;
+      })(),
+      rating: parseFloat(wcProduct.average_rating || "0"),
+      reviewCount: parseInt(wcProduct.review_count || "0"),
+      inStock: wcProduct.stock_status === "instock",
+      relatedIds: wcProduct.related_ids || [],
+    };
+  }, [wcProduct]);
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({
@@ -82,15 +165,22 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    addToCart({
-      id: `${product.id}-${selectedSize}`,
+    if (!product) return;
+    
+    const cartItem: any = {
+      id: `${product.id}${product.sizes && product.sizes.length > 0 ? `-${selectedSize}` : ''}`,
       name: product.name,
       price: product.price,
       originalPrice: product.originalPrice,
       image: product.images[0],
-      size: selectedSize,
       quantity: quantity,
-    });
+    };
+    
+    if (product.sizes && product.sizes.length > 0) {
+      cartItem.size = selectedSize;
+    }
+    
+    addToCart(cartItem);
 
     // Show notification
     setShowAddedNotification(true);
@@ -101,20 +191,60 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
+    if (!product) return;
+    
     // Add to cart first
     addToCart({
-      id: `${product.id}-${selectedSize}`,
+      id: `${product.id}${product.sizes && product.sizes.length > 0 ? `-${selectedSize}` : ''}`,
       name: product.name,
       price: product.price,
       originalPrice: product.originalPrice,
       image: product.images[0],
-      size: selectedSize,
+      ...(product.sizes && product.sizes.length > 0 && { size: selectedSize }),
       quantity: quantity,
     });
     
     // Redirect to checkout
     router.push("/checkout");
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        <Header />
+        <main className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        <Header />
+        <main className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <p className="text-red-600 mb-4">Failed to load product</p>
+              <Link href="/" className="text-pink-600 hover:underline">
+                Go back to home
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -196,7 +326,7 @@ export default function ProductDetailPage() {
 
             {/* Thumbnail Images */}
             <div className="flex gap-3 overflow-x-auto pb-2">
-              {product.images.map((image, index) => (
+              {product.images.map((image: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -225,23 +355,31 @@ export default function ProductDetailPage() {
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 {product.name}
               </h1>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                  <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
+              {(product.rating > 0 || product.reviewCount > 0) && (
+                <div className="flex items-center gap-4">
+                  {product.rating > 0 && (
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                      <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
+                    </div>
+                  )}
+                  {product.reviewCount > 0 && (
+                    <span className="text-sm text-gray-500">({product.reviewCount} Reviews)</span>
+                  )}
                 </div>
-                <span className="text-sm text-gray-500">({product.reviewCount} Reviews)</span>
-              </div>
-              <p className="text-sm text-gray-500 mt-1">SKU: {product.sku}</p>
+              )}
+              {product.sku && product.sku !== `PROD-${product.id}` && (
+                <p className="text-sm text-gray-500 mt-1">SKU: {product.sku}</p>
+              )}
             </div>
 
             {/* Pricing */}
@@ -258,54 +396,58 @@ export default function ProductDetailPage() {
             </div>
             <p className="text-sm text-gray-600 -mt-2">Inclusive of all taxes</p>
 
-            {/* Color Selection */}
-            <div>
-              <label className="text-sm font-semibold text-gray-900 mb-3 block">
-                COLOR: <span className="font-normal text-gray-600">{product.colors[selectedColor].name}</span>
-              </label>
-              <div className="flex gap-3">
-                {product.colors.map((color, index) => (
-                  <button
-                    key={color.name}
-                    onClick={() => setSelectedColor(index)}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      selectedColor === index
-                        ? 'border-pink-600 ring-2 ring-pink-600 ring-offset-2'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Size Selection */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-semibold text-gray-900">
-                  SIZE: <span className="font-normal text-gray-600">{selectedSize}</span>
+            {/* Color Selection - Only show if colors exist */}
+            {product.colors && product.colors.length > 0 && (
+              <div>
+                <label className="text-sm font-semibold text-gray-900 mb-3 block">
+                  COLOR: <span className="font-normal text-gray-600">{product.colors[selectedColor]?.name}</span>
                 </label>
-                <button className="text-sm text-pink-600 hover:underline font-medium">
-                  Size Guide
-                </button>
+                <div className="flex gap-3">
+                  {product.colors.map((color: { name: string; hex: string }, index: number) => (
+                    <button
+                      key={color.name}
+                      onClick={() => setSelectedColor(index)}
+                      className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                        selectedColor === index
+                          ? 'border-pink-600 ring-2 ring-pink-600 ring-offset-2'
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="flex gap-3 flex-wrap">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`w-14 h-10 rounded-lg border-2 font-medium text-sm transition-all ${
-                      selectedSize === size
-                        ? "bg-pink-600 text-white border-pink-600"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-pink-400"
-                    }`}
-                  >
-                    {size}
+            )}
+
+            {/* Size Selection - Only show if sizes exist */}
+            {product.sizes && product.sizes.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-semibold text-gray-900">
+                    SIZE: <span className="font-normal text-gray-600">{selectedSize}</span>
+                  </label>
+                  <button className="text-sm text-pink-600 hover:underline font-medium">
+                    Size Guide
                   </button>
-                ))}
+                </div>
+                <div className="flex gap-3 flex-wrap">
+                  {product.sizes.map((size: string) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`w-14 h-10 rounded-lg border-2 font-medium text-sm transition-all ${
+                        selectedSize === size
+                          ? "bg-pink-600 text-white border-pink-600"
+                          : "bg-white text-gray-700 border-gray-300 hover:border-pink-400"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity */}
             <div>
@@ -398,168 +540,204 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Collapsible Sections */}
+            {/* Collapsible Sections - Only show sections that have data */}
             <div className="space-y-0">
-              {/* Description */}
-              <div className="border-b">
-                <button
-                  onClick={() => toggleSection("description")}
-                  className="w-full flex items-center justify-between py-4 text-left"
-                >
-                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
-                    Description
-                  </span>
-                  <svg
-                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.description ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {/* Description - Only show if description exists */}
+              {product.description && (
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection("description")}
+                    className="w-full flex items-center justify-between py-4 text-left"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openSections.description && (
-                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
-                    {product.description}
-                  </div>
-                )}
-              </div>
+                    <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                      Description
+                    </span>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 transition-transform ${openSections.description ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {openSections.description && (
+                    <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                      <HtmlRenderer html={product.description} className="text-gray-600" />
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Style Notes */}
-              <div className="border-b">
-                <button
-                  onClick={() => toggleSection("styleNotes")}
-                  className="w-full flex items-center justify-between py-4 text-left"
-                >
-                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
-                    Style Notes
-                  </span>
-                  <svg
-                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.styleNotes ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {/* Style Notes - Only show if styleNotes exists */}
+              {product.styleNotes && (
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection("styleNotes")}
+                    className="w-full flex items-center justify-between py-4 text-left"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openSections.styleNotes && (
-                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
-                    {product.styleNotes}
-                  </div>
-                )}
-              </div>
+                    <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                      Style Notes
+                    </span>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 transition-transform ${openSections.styleNotes ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {openSections.styleNotes && (
+                    <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                      <HtmlRenderer html={product.styleNotes} className="text-gray-600" />
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Size & Fit */}
-              <div className="border-b">
-                <button
-                  onClick={() => toggleSection("sizeFit")}
-                  className="w-full flex items-center justify-between py-4 text-left"
-                >
-                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
-                    Size & Fit
-                  </span>
-                  <svg
-                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.sizeFit ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {/* Size & Fit - Only show if sizeFit exists */}
+              {product.sizeFit && (
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection("sizeFit")}
+                    className="w-full flex items-center justify-between py-4 text-left"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openSections.sizeFit && (
-                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
-                    {product.sizeFit}
-                  </div>
-                )}
-              </div>
+                    <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                      Size & Fit
+                    </span>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 transition-transform ${openSections.sizeFit ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {openSections.sizeFit && (
+                    <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                      <HtmlRenderer html={product.sizeFit} className="text-gray-600" />
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Material & Care */}
-              <div className="border-b">
-                <button
-                  onClick={() => toggleSection("material")}
-                  className="w-full flex items-center justify-between py-4 text-left"
-                >
-                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
-                    Material & Care
-                  </span>
-                  <svg
-                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.material ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {/* Material & Care - Only show if material exists */}
+              {product.material && (
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection("material")}
+                    className="w-full flex items-center justify-between py-4 text-left"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openSections.material && (
-                  <div className="pb-4 text-gray-600 text-sm leading-relaxed">
-                    {product.material}
-                  </div>
-                )}
-              </div>
+                    <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                      Material & Care
+                    </span>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 transition-transform ${openSections.material ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {openSections.material && (
+                    <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+                      <HtmlRenderer html={product.material} className="text-gray-600" />
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Specifications */}
-              <div className="border-b">
-                <button
-                  onClick={() => toggleSection("specifications")}
-                  className="w-full flex items-center justify-between py-4 text-left"
-                >
-                  <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
-                    Specifications
-                  </span>
-                  <svg
-                    className={`w-5 h-5 text-gray-600 transition-transform ${openSections.specifications ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {/* Specifications - Only show if specifications exist */}
+              {product.specifications && Object.keys(product.specifications).length > 0 && (
+                <div className="border-b">
+                  <button
+                    onClick={() => toggleSection("specifications")}
+                    className="w-full flex items-center justify-between py-4 text-left"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openSections.specifications && (
-                  <div className="pb-4">
-                    <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                      {Object.entries(product.specifications).map(([key, value]) => (
-                        <div key={key} className="contents">
-                          <dt className="text-gray-500">{key}</dt>
-                          <dd className="text-gray-900">{value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-                )}
-              </div>
+                    <span className="font-semibold text-gray-900 uppercase text-sm tracking-wide">
+                      Specifications
+                    </span>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 transition-transform ${openSections.specifications ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {openSections.specifications && (
+                    <div className="pb-4">
+                      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        {Object.entries(product.specifications).map(([key, value]) => (
+                          <div key={key} className="contents">
+                            <dt className="text-gray-500">{key}</dt>
+                            <dd className="text-gray-900">{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* You May Also Like Section */}
-        <section className="mt-16 pb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">You May Also Like</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <Link key={item} href={`/product/${item}`} className="group">
-                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-100 mb-3">
-                  <Image
-                    src={`https://images.unsplash.com/photo-${1594633312681 + item * 1000}-425c7b97ccd1?w=400&h=600&fit=crop&q=80`}
-                    alt={`Related Product ${item}`}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <h3 className="text-sm font-medium text-gray-900 group-hover:text-pink-600 line-clamp-2">
-                  Elegant Designer Kurti
-                </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="font-bold text-gray-900">₹1,199</span>
-                  <span className="text-sm text-gray-500 line-through">₹1,899</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+        {/* You May Also Like Section - Only show if related products exist */}
+        {relatedProducts && relatedProducts.length > 0 && (
+          <section className="mt-16 pb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">You May Also Like</h2>
+            {allProductsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {relatedProducts.map((relatedProduct: any) => {
+                  const regularPrice = parseFloat(relatedProduct.regular_price || "0");
+                  const salePrice = relatedProduct.sale_price ? parseFloat(relatedProduct.sale_price) : null;
+                  const finalPrice = salePrice || regularPrice;
+                  const discount = salePrice ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0;
+                  const image = relatedProduct.images && relatedProduct.images.length > 0 
+                    ? relatedProduct.images[0].src 
+                    : "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=600&fit=crop&q=80";
+                  const productSlug = relatedProduct.slug || relatedProduct.id;
+                  
+                  return (
+                    <Link key={relatedProduct.id} href={`/product/${productSlug}`} className="group">
+                      <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-100 mb-3">
+                        <Image
+                          src={image}
+                          alt={relatedProduct.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {discount > 0 && (
+                          <span className="absolute top-2 right-2 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                            -{discount}%
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-medium text-gray-900 group-hover:text-pink-600 line-clamp-2">
+                        {relatedProduct.name}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="font-bold text-gray-900">₹{finalPrice.toLocaleString()}</span>
+                        {salePrice && (
+                          <span className="text-sm text-gray-500 line-through">₹{regularPrice.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
       </main>
 
       {/* Added to Cart Notification */}

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/lib/context/CartContext";
-import { useAuth } from "@/lib/context/AuthContext";
 
 interface HeaderProps {
   transparent?: boolean;
@@ -24,7 +23,6 @@ export default function Header({ transparent = false }: HeaderProps) {
     cartOriginalTotal,
     cartItemsCount 
   } = useCart();
-  const { user, signOut, loading } = useAuth();
 
   // Scroll detection
   useEffect(() => {
@@ -107,58 +105,12 @@ export default function Header({ transparent = false }: HeaderProps) {
             {/* Right Nav */}
             <div className="flex items-center gap-4 relative z-20 pointer-events-auto">
               {/* User Menu */}
-              {loading ? (
-                <span className={`${textColor} text-sm`}>...</span>
-              ) : user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className={`${textColor} ${hoverColor} text-sm cursor-pointer flex items-center gap-1`}
-                  >
-                    <span className="hidden sm:inline">{user.user_metadata?.first_name || user.email?.split('@')[0] || 'Account'}</span>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-800 truncate">{user.email}</p>
-                      </div>
-                      <Link
-                        href="/account"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        My Account
-                      </Link>
-                      <Link
-                        href="/orders"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        My Orders
-                      </Link>
-                      <button
-                        onClick={() => {
-                          signOut();
-                          setShowUserMenu(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
-                      >
-                        Log Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className={`${textColor} ${hoverColor} text-sm cursor-pointer hover:underline`}
-                >
-                  Log In
-                </Link>
-              )}
+              <Link
+                href="/auth/login"
+                className={`${textColor} ${hoverColor} text-sm cursor-pointer hover:underline`}
+              >
+                Log In
+              </Link>
               <Link
                 href="/rewards"
                 className={`${textColor} ${hoverColor} text-sm`}
@@ -260,44 +212,13 @@ export default function Header({ transparent = false }: HeaderProps) {
                 Rewards
               </Link>
               <div className="border-t mt-2 pt-2">
-                {user ? (
-                  <>
-                    <p className="text-sm text-gray-500 py-2">
-                      Hello, {user.user_metadata?.first_name || user.email?.split('@')[0]}
-                    </p>
-                    <Link
-                      href="/account"
-                      className="block py-2 text-gray-700 hover:text-pink-600"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      My Account
-                    </Link>
-                    <Link
-                      href="/orders"
-                      className="block py-2 text-gray-700 hover:text-pink-600"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      My Orders
-                    </Link>
-                    <button
-                      onClick={() => {
-                        signOut();
-                        setIsMenuOpen(false);
-                      }}
-                      className="block w-full text-left py-2 text-red-600 hover:text-red-700 cursor-pointer"
-                    >
-                      Log Out
-                    </button>
-                  </>
-                ) : (
-                  <Link
-                    href="/auth/login"
-                    className="block py-2 text-pink-600 font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Log In / Sign Up
-                  </Link>
-                )}
+                <Link
+                  href="/auth/login"
+                  className="block py-2 text-pink-600 font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Log In / Sign Up
+                </Link>
               </div>
             </div>
           </div>

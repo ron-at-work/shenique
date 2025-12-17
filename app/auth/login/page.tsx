@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/context/AuthContext";
 
 type LoginMode = "password" | "otp";
 type OtpStep = "phone" | "verify";
@@ -18,7 +17,7 @@ interface FormErrors {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signInWithEmail, signInWithGoogle, signInWithOtp, verifyOtp, user } = useAuth();
+  // Auth functionality removed - Supabase has been removed from the project
   
   const [loginMode, setLoginMode] = useState<LoginMode>("password");
   const [otpStep, setOtpStep] = useState<OtpStep>("phone");
@@ -39,12 +38,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      router.push('/');
-    }
-  }, [user, router]);
+  // Auth functionality removed
 
   // Resend timer
   useEffect(() => {
@@ -109,13 +103,8 @@ export default function LoginPage() {
     setErrors({});
 
     try {
-      const { error } = await signInWithEmail(formData.email, formData.password);
-      
-      if (error) {
-        setErrors({ general: error.message || "Invalid credentials. Please try again." });
-      } else {
-        router.push("/");
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setErrors({ general: "Authentication is currently unavailable. Please contact support." });
     } catch {
       setErrors({ general: "Something went wrong. Please try again." });
     } finally {
@@ -127,10 +116,8 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        setErrors({ general: error.message || "Failed to sign in with Google" });
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setErrors({ general: "Authentication is currently unavailable. Please contact support." });
     } catch {
       setErrors({ general: "Failed to sign in with Google" });
     } finally {
@@ -152,14 +139,8 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { error } = await signInWithOtp(cleanPhone);
-      
-      if (error) {
-        setErrors({ phone: error.message || "Failed to send OTP" });
-      } else {
-        setOtpStep("verify");
-        setResendTimer(60);
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setErrors({ phone: "OTP authentication is currently unavailable. Please contact support." });
     } catch {
       setErrors({ phone: "Failed to send OTP. Please try again." });
     } finally {
@@ -214,13 +195,8 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { error } = await verifyOtp(phone, otpValue);
-      
-      if (error) {
-        setErrors({ otp: error.message || "Invalid OTP. Please try again." });
-      } else {
-        router.push("/");
-      }
+      // Auth functionality removed - Supabase has been removed from the project
+      setErrors({ otp: "OTP verification is currently unavailable. Please contact support." });
     } catch {
       setErrors({ otp: "Invalid OTP. Please try again." });
     } finally {
@@ -234,11 +210,7 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      const { error } = await signInWithOtp(phone);
-      if (!error) {
-        setResendTimer(60);
-        setOtp(["", "", "", "", "", ""]);
-      }
+      // Auth functionality removed - Supabase has been removed from the project
     } finally {
       setIsLoading(false);
     }
