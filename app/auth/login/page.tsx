@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
@@ -11,7 +11,7 @@ interface FormErrors {
   general?: string;
 }
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, user, loading: authLoading } = useAuth();
@@ -251,5 +251,28 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col bg-linear-to-br from-pink-50 via-white to-purple-50">
+        <main className="flex-1 flex items-center justify-center py-8 px-4">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+              <Link href="/" className="inline-block">
+                <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent">
+                  Shenique
+                </h1>
+              </Link>
+              <p className="text-gray-600 mt-2">Loading...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
