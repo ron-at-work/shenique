@@ -85,7 +85,7 @@ export default function ProductDetailPage() {
       ? colorAttribute.options.map((color: string) => {
           // Map color names to hex codes (you can expand this)
           const colorMap: Record<string, string> = {
-            "maroon": "#7F1D1D",
+            "maroon": "#7B1E3A",
             "navy": "#1E3A5F",
             "green": "#166534",
             "red": "#DC2626",
@@ -93,8 +93,10 @@ export default function ProductDetailPage() {
             "pink": "#EC4899",
             "black": "#171717",
             "white": "#FFFFFF",
+            "gold": "#C9A14A",
+            "beige": "#F5F0E6",
           };
-          return { name: color, hex: colorMap[color.toLowerCase()] || "#7F1D1D" };
+          return { name: color, hex: colorMap[color.toLowerCase()] || "#7B1E3A" };
         })
       : [];
 
@@ -229,7 +231,7 @@ export default function ProductDetailPage() {
         <main className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B1E3A] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading...</p>
             </div>
           </div>
@@ -246,7 +248,7 @@ export default function ProductDetailPage() {
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <p className="text-red-600 mb-4">Failed to load product</p>
-              <Link href="/" className="text-pink-600 hover:underline">
+              <Link href="/" className="text-[#7B1E3A] hover:underline">
                 Go back to home
               </Link>
             </div>
@@ -262,11 +264,11 @@ export default function ProductDetailPage() {
       <main className="container mx-auto px-4 py-6 overflow-x-hidden">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm mb-6">
-          <Link href="/" className="text-gray-600 hover:text-pink-600">
+          <Link href="/" className="text-gray-600 hover:text-[#7B1E3A]">
             Home
           </Link>
           <span className="text-gray-400">/</span>
-          <Link href={`/${product.category.toLowerCase()}`} className="text-gray-600 hover:text-pink-600">
+          <Link href={`/${product.category.toLowerCase()}`} className="text-gray-600 hover:text-[#7B1E3A]">
             {product.category}
           </Link>
           <span className="text-gray-400">/</span>
@@ -288,7 +290,7 @@ export default function ProductDetailPage() {
               />
               
               {/* Discount Badge */}
-              <span className="absolute top-4 left-4 bg-pink-600 text-white text-sm font-semibold px-3 py-1 rounded-lg">
+              <span className="absolute top-4 left-4 bg-[#7B1E3A] text-white text-sm font-semibold px-3 py-1 rounded-lg">
                 -{product.discount}%
               </span>
 
@@ -296,7 +298,7 @@ export default function ProductDetailPage() {
               <button
                 onClick={() => setIsWishlisted(!isWishlisted)}
                 className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                  isWishlisted ? 'bg-pink-600 text-white' : 'bg-white text-gray-700 hover:bg-pink-600 hover:text-white'
+                  isWishlisted ? 'bg-[#7B1E3A] text-white' : 'bg-white text-gray-700 hover:bg-[#7B1E3A] hover:text-white'
                 } shadow-lg`}
               >
                 <svg
@@ -342,7 +344,7 @@ export default function ProductDetailPage() {
                   onMouseEnter={() => setSelectedImage(index)}
                   className={`relative w-20 h-24 flex-shrink-0 rounded-lg overflow-hidden transition-all ${
                     selectedImage === index
-                      ? 'ring-2 ring-pink-600 ring-offset-2'
+                      ? 'ring-2 ring-[#7B1E3A] ring-offset-2'
                       : 'opacity-70 hover:opacity-100'
                   }`}
                 >
@@ -371,7 +373,7 @@ export default function ProductDetailPage() {
                       {[...Array(5)].map((_, i) => (
                         <svg
                           key={i}
-                          className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                          className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'text-[#C9A14A]' : 'text-gray-300'}`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -418,7 +420,7 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedColor(index)}
                       className={`w-10 h-10 rounded-lg border-2 transition-all ${
                         selectedColor === index
-                          ? 'border-pink-600 ring-2 ring-pink-600 ring-offset-2'
+                          ? 'border-[#7B1E3A] ring-2 ring-[#7B1E3A] ring-offset-2'
                           : 'border-gray-300 hover:border-gray-400'
                       }`}
                       style={{ backgroundColor: color.hex }}
@@ -436,7 +438,7 @@ export default function ProductDetailPage() {
                   <label className="text-sm font-semibold text-gray-900">
                     SIZE: <span className="font-normal text-gray-600">{selectedSize}</span>
                   </label>
-                  <button className="text-sm text-pink-600 hover:underline font-medium">
+                  <button className="text-sm text-[#7B1E3A] hover:underline font-medium">
                     Size Guide
                   </button>
                 </div>
@@ -447,8 +449,8 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedSize(size)}
                       className={`w-14 h-10 rounded-lg border-2 font-medium text-sm transition-all ${
                         selectedSize === size
-                          ? "bg-pink-600 text-white border-pink-600"
-                          : "bg-white text-gray-700 border-gray-300 hover:border-pink-400"
+                          ? "bg-[#7B1E3A] text-white border-[#7B1E3A]"
+                          : "bg-white text-gray-700 border-gray-300 hover:border-[#7B1E3A]"
                       }`}
                     >
                       {size}
@@ -486,20 +488,20 @@ export default function ProductDetailPage() {
             <div className="flex gap-4">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-white text-pink-600 border-2 border-pink-600 py-4 px-6 rounded-lg font-semibold text-lg hover:bg-pink-50 transition-colors"
+                className="flex-1 bg-white text-[#7B1E3A] border-2 border-[#7B1E3A] py-4 px-6 rounded-lg font-semibold text-lg hover:bg-[#F5F0E6] transition-colors"
               >
                 ADD TO CART
               </button>
               <button
                 onClick={handleBuyNow}
-                className="flex-1 bg-pink-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-pink-700 transition-colors"
+                className="flex-1 bg-[#7B1E3A] text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-[#5C1629] transition-colors"
               >
                 BUY NOW
               </button>
             </div>
 
             {/* Delivery Check */}
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-[#F5F0E6] rounded-xl p-4">
               <label className="text-sm font-semibold text-gray-900 mb-3 block">
                 CHECK DELIVERY
               </label>
@@ -510,7 +512,7 @@ export default function ProductDetailPage() {
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
                   maxLength={6}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B1E3A] bg-white"
                 />
                 <button
                   onClick={handlePincodeCheck}
@@ -524,25 +526,25 @@ export default function ProductDetailPage() {
             {/* Features */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y">
               <div className="flex flex-col items-center text-center gap-2">
-                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-[#7B1E3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                 </svg>
                 <span className="text-xs text-gray-600">Free Shipping</span>
               </div>
               <div className="flex flex-col items-center text-center gap-2">
-                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-[#7B1E3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
                 <span className="text-xs text-gray-600">7 Days Return</span>
               </div>
               <div className="flex flex-col items-center text-center gap-2">
-                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-[#7B1E3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 <span className="text-xs text-gray-600">COD Available</span>
               </div>
               <div className="flex flex-col items-center text-center gap-2">
-                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-[#7B1E3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
                 <span className="text-xs text-gray-600">Secure Payment</span>
@@ -702,7 +704,7 @@ export default function ProductDetailPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-8">You May Also Like</h2>
             {allProductsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B1E3A]"></div>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -726,12 +728,12 @@ export default function ProductDetailPage() {
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         {discount > 0 && (
-                          <span className="absolute top-2 right-2 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                          <span className="absolute top-2 right-2 bg-[#7B1E3A] text-white text-xs font-semibold px-2 py-1 rounded">
                             -{discount}%
                           </span>
                         )}
                       </div>
-                      <h3 className="text-sm font-medium text-gray-900 group-hover:text-pink-600 line-clamp-2">
+                      <h3 className="text-sm font-medium text-gray-900 group-hover:text-[#7B1E3A] line-clamp-2">
                         {relatedProduct.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">

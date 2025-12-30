@@ -3,6 +3,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Ethnic & Elegant Theme Colors */
+  --color-maroon: #7B1E3A;
+  --color-maroon-dark: #5C1629;
+  --color-maroon-light: #9A2E4F;
+  --color-beige: #F5F0E6;
+  --color-beige-dark: #E8E0D0;
+  --color-gold: #C9A14A;
+  --color-gold-light: #D4B76A;
+  --color-gold-dark: #A88A3D;
 }
 
 @theme inline {
@@ -10,6 +20,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Custom Theme Colors */
+  --color-maroon: #7B1E3A;
+  --color-maroon-dark: #5C1629;
+  --color-maroon-light: #9A2E4F;
+  --color-beige: #F5F0E6;
+  --color-beige-dark: #E8E0D0;
+  --color-gold: #C9A14A;
+  --color-gold-light: #D4B76A;
+  --color-gold-dark: #A88A3D;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -141,12 +161,12 @@ html {
 }
 
 .html-content a {
-  color: #ec4899; /* text-pink-600 */
+  color: #7B1E3A; /* maroon */
   text-decoration: underline;
 }
 
 .html-content a:hover {
-  color: #be185d; /* text-pink-700 */
+  color: #5C1629; /* maroon-dark */
 }
 
 .html-content br {

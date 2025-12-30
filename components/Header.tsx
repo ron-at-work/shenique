@@ -92,7 +92,7 @@ export default function Header({ transparent = false }: HeaderProps) {
   // Dynamic classes based on scroll state
   // Always white background, so always use dark text
   const textColor = 'text-gray-700';
-  const hoverColor = 'hover:text-pink-600';
+  const hoverColor = 'hover:text-[#7B1E3A]';
   const borderColor = 'border-gray-200';
 
   return (
@@ -100,7 +100,7 @@ export default function Header({ transparent = false }: HeaderProps) {
       {/* Fixed wrapper - always fixed at top */}
       <div className="fixed top-0 left-0 right-0 z-50">
         {/* Top Banner */}
-        <div className="bg-pink-600 text-white text-center py-2 text-sm">
+        <div className="bg-[#7B1E3A] text-white text-center py-2 text-sm">
           <p>
             BUY FOR MIN. ₹2499, GET FLAT ₹100 OFF | CODE: SALE100 | BUY FOR MIN.
             ₹2899, GET FLAT ₹200 OFF | CODE: SALE200
@@ -125,7 +125,7 @@ export default function Header({ transparent = false }: HeaderProps) {
               </Link>
               <Link
                 href="/new-arrivals"
-                className="text-pink-600 hover:text-pink-700 font-medium transition-colors duration-300"
+                className="text-[#7B1E3A] hover:text-[#5C1629] font-medium transition-colors duration-300"
               >
                 New Arrivals
               </Link>
@@ -134,18 +134,18 @@ export default function Header({ transparent = false }: HeaderProps) {
             {/* Center Logo */}
             <Link href="/" className="absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center group py-3 pointer-events-auto z-0">
               {/* Main Brand Name - Full Cursive */}
-              <span className="text-3xl md:text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm transition-all duration-300">
+              <span className="text-3xl md:text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-[#7B1E3A] via-[#9A2E4F] to-[#7B1E3A] bg-clip-text text-transparent drop-shadow-sm transition-all duration-300">
                 Shenique
               </span>
               {/* Decorative Line with Tagline */}
               <div className="flex items-center gap-2 -mt-0.5">
-                <div className="w-6 h-px bg-pink-400 transition-all duration-300"></div>
-                <span className="text-pink-500">✦</span>
+                <div className="w-6 h-px bg-[#C9A14A] transition-all duration-300"></div>
+                <span className="text-[#C9A14A]">✦</span>
                 <span className="text-[8px] tracking-[0.15em] italic font-(family-name:--font-playfair) text-gray-500 transition-colors duration-300">
                   Grace in Every Curve
                 </span>
-                <span className="text-pink-500">✦</span>
-                <div className="w-6 h-px bg-pink-400 transition-all duration-300"></div>
+                <span className="text-[#C9A14A]">✦</span>
+                <div className="w-6 h-px bg-[#C9A14A] transition-all duration-300"></div>
               </div>
             </Link>
 
@@ -167,14 +167,14 @@ export default function Header({ transparent = false }: HeaderProps) {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <Link
                         href="/account"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F5F0E6]"
                         onClick={() => setShowUserMenu(false)}
                       >
-                        My Account
+                        My Profile
                       </Link>
                       <Link
                         href="/orders"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F5F0E6]"
                         onClick={() => setShowUserMenu(false)}
                       >
                         My Orders
@@ -184,7 +184,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                           await logout();
                           setShowUserMenu(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#F5F0E6]"
                       >
                         Logout
                       </button>
@@ -240,7 +240,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                   />
                 </svg>
                 {cartItemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  <span className="absolute -top-2 -right-2 bg-[#7B1E3A] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
                     {cartItemsCount}
                   </span>
                 )}
@@ -279,7 +279,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                 <Link
                   key={cat}
                   href={`/${cat.toLowerCase().replace(" ", "-")}`}
-                  className="block py-2 text-gray-700 hover:text-pink-600"
+                  className="block py-2 text-gray-700 hover:text-[#7B1E3A]"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {cat}
@@ -287,26 +287,54 @@ export default function Header({ transparent = false }: HeaderProps) {
               ))}
               <Link
                 href="/new-arrivals"
-                className="block py-2 text-pink-600 font-medium"
+                className="block py-2 text-[#7B1E3A] font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 New Arrivals
               </Link>
               <Link
                 href="/rewards"
-                className="block py-2 text-gray-700 hover:text-pink-600"
+                className="block py-2 text-gray-700 hover:text-[#7B1E3A]"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Rewards
               </Link>
               <div className="border-t mt-2 pt-2">
-                <Link
-                  href="/auth/login"
-                  className="block py-2 text-pink-600 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Log In / Sign Up
-                </Link>
+                {user ? (
+                  <>
+                    <Link
+                      href="/account"
+                      className="block py-2 text-gray-700 hover:text-[#7B1E3A]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/orders"
+                      className="block py-2 text-gray-700 hover:text-[#7B1E3A]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Orders
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        await logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="block py-2 text-red-600 font-medium"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="block py-2 text-[#7B1E3A] font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Log In / Sign Up
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -326,19 +354,19 @@ export default function Header({ transparent = false }: HeaderProps) {
               {/* Cart Header */}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center gap-3">
-                  <svg className="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-[#7B1E3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   <h2 className="text-xl font-bold text-gray-900">Your Cart</h2>
                   {cartItemsCount > 0 && (
-                    <span className="bg-pink-600 text-white text-sm px-2 py-0.5 rounded-full">
+                    <span className="bg-[#7B1E3A] text-white text-sm px-2 py-0.5 rounded-full">
                       {cartItemsCount}
                     </span>
                   )}
                 </div>
                 <button
                   onClick={() => setIsCartOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-[#F5F0E6] rounded-full transition-colors"
                 >
                   <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -357,7 +385,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                     <p className="text-gray-500 mb-6">Looks like you have not added anything yet</p>
                     <button
                       onClick={() => setIsCartOpen(false)}
-                      className="px-6 py-3 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 transition-colors"
+                      className="px-6 py-3 bg-[#7B1E3A] text-white rounded-lg font-medium hover:bg-[#5C1629] transition-colors"
                     >
                       Continue Shopping
                     </button>
@@ -365,7 +393,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                 ) : (
                   <div className="space-y-3">
                     {cartItems.map((item) => (
-                      <div key={item.id} className="flex gap-3 p-3 bg-gray-50 rounded-xl">
+                      <div key={item.id} className="flex gap-3 p-3 bg-[#F5F0E6] rounded-xl">
                         {/* Product Image */}
                         <div className="relative w-20 h-24 rounded-lg overflow-hidden shrink-0">
                           <Image
@@ -461,8 +489,8 @@ export default function Header({ transparent = false }: HeaderProps) {
                                 onClick={() => isApplied ? handleRemoveCoupon() : handleApplyCoupon(coupon)}
                                 className={`w-full text-left p-2 rounded-lg border text-xs transition-colors ${
                                   isApplied
-                                    ? 'border-pink-500 bg-pink-50 text-pink-700'
-                                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-pink-300 hover:bg-pink-50'
+                                    ? 'border-[#7B1E3A] bg-[#F5F0E6] text-[#7B1E3A]'
+                                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-[#7B1E3A] hover:bg-[#F5F0E6]'
                                 }`}
                               >
                                 <div className="flex items-center justify-between">
@@ -471,7 +499,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                                     <p className="text-xs text-gray-600 truncate">{coupon.description || discountText}</p>
                                   </div>
                                   <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${
-                                    isApplied ? 'bg-pink-600 text-white' : 'bg-pink-100 text-pink-700'
+                                    isApplied ? 'bg-[#7B1E3A] text-white' : 'bg-[#F5F0E6] text-[#7B1E3A]'
                                   }`}>
                                     {discountText}
                                   </span>
@@ -491,7 +519,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                       placeholder="Enter coupon code"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7B1E3A]"
                     />
                     {appliedCoupon ? (
                       <button
@@ -540,14 +568,14 @@ export default function Header({ transparent = false }: HeaderProps) {
                   <div className="space-y-2">
                     <Link
                       href="/checkout"
-                      className="block w-full bg-pink-600 text-white py-3 rounded-lg font-semibold text-center hover:bg-pink-700 transition-colors"
+                      className="block w-full bg-[#7B1E3A] text-white py-3 rounded-lg font-semibold text-center hover:bg-[#5C1629] transition-colors"
                       onClick={() => setIsCartOpen(false)}
                     >
                       PROCEED TO CHECKOUT
                     </Link>
                     <button
                       onClick={() => setIsCartOpen(false)}
-                      className="w-full py-2 text-gray-700 text-sm font-medium hover:text-pink-600 transition-colors"
+                      className="w-full py-2 text-gray-700 text-sm font-medium hover:text-[#7B1E3A] transition-colors"
                     >
                       Continue Shopping
                     </button>

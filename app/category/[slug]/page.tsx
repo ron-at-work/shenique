@@ -109,7 +109,7 @@ function ProductCard({ product }: { product: any }) {
           )}
 
           {discount > 0 && (
-            <span className="absolute top-3 right-3 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded">
+            <span className="absolute top-3 right-3 bg-[#7B1E3A] text-white text-xs font-semibold px-2 py-1 rounded">
               -{discount}%
             </span>
           )}
@@ -121,7 +121,7 @@ function ProductCard({ product }: { product: any }) {
             }}
             className={`absolute bottom-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
               isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            } ${isWishlisted ? 'bg-pink-600 text-white' : 'bg-white/90 text-gray-700 hover:bg-pink-600 hover:text-white'}`}
+            } ${isWishlisted ? 'bg-[#7B1E3A] text-white' : 'bg-white/90 text-gray-700 hover:bg-[#7B1E3A] hover:text-white'}`}
           >
             <svg
               className="w-5 h-5"
@@ -141,7 +141,7 @@ function ProductCard({ product }: { product: any }) {
           <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 transition-all duration-300 ${
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}>
-            <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-medium hover:bg-pink-600 hover:text-white transition-colors">
+            <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-medium hover:bg-[#7B1E3A] hover:text-white transition-colors">
               Quick View
             </button>
           </div>
@@ -149,7 +149,7 @@ function ProductCard({ product }: { product: any }) {
       </Link>
 
       <div className="mt-4 space-y-2">
-        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-pink-600 transition-colors">
+        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-[#7B1E3A] transition-colors">
           {product.name}
         </h3>
         <div className="flex items-center gap-2">
@@ -255,7 +255,7 @@ export default function CategoryPage() {
       <div className="min-h-screen bg-white overflow-x-hidden">
         <main className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B1E3A]"></div>
           </div>
         </main>
       </div>
@@ -269,7 +269,7 @@ export default function CategoryPage() {
         <main className="container mx-auto px-4 py-12">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Category not found</h1>
-            <Link href="/" className="text-pink-600 hover:underline">
+            <Link href="/" className="text-[#7B1E3A] hover:underline">
               Go back to home
             </Link>
           </div>
@@ -284,7 +284,7 @@ export default function CategoryPage() {
       <main className="container mx-auto px-4 py-3">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm mb-6">
-          <Link href="/" className="text-gray-600 hover:text-pink-600">
+          <Link href="/" className="text-gray-600 hover:text-[#7B1E3A]">
             Home
           </Link>
           <span className="text-gray-400">/</span>
@@ -304,7 +304,7 @@ export default function CategoryPage() {
               {totalSelectedFilters > 0 && (
                 <button 
                   onClick={clearAllFilters}
-                  className="text-sm text-pink-600 hover:underline"
+                  className="text-sm text-[#7B1E3A] hover:underline"
                 >
                   Clear All ({totalSelectedFilters})
                 </button>
@@ -323,8 +323,8 @@ export default function CategoryPage() {
                     onClick={() => handleFilterChange('size', size)}
                     className={`px-3 py-1.5 text-sm border rounded-md transition-colors ${
                       selectedFilters.size.includes(size)
-                        ? 'bg-pink-600 text-white border-pink-600'
-                        : 'border-gray-300 text-gray-700 hover:border-pink-600'
+                        ? 'bg-[#7B1E3A] text-white border-[#7B1E3A]'
+                        : 'border-gray-300 text-gray-700 hover:border-[#7B1E3A]'
                     }`}
                   >
                     {size}
@@ -345,7 +345,7 @@ export default function CategoryPage() {
                     onClick={() => handleFilterChange('colors', color.name)}
                     className={`w-8 h-8 rounded-full border-2 transition-all ${
                       selectedFilters.colors.includes(color.name)
-                        ? 'border-pink-600 ring-2 ring-pink-600 ring-offset-2'
+                        ? 'border-[#7B1E3A] ring-2 ring-[#7B1E3A] ring-offset-2'
                         : 'border-gray-300 hover:border-gray-400'
                     }`}
                     style={{ backgroundColor: color.hex }}
@@ -366,7 +366,7 @@ export default function CategoryPage() {
                     type="checkbox"
                     checked={selectedFilters.price.includes(price.label)}
                     onChange={() => handleFilterChange('price', price.label)}
-                    className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                    className="w-4 h-4 text-[#7B1E3A] border-gray-300 rounded focus:ring-[#7B1E3A]"
                   />
                   <span className="text-sm text-gray-700">{price.label}</span>
                 </label>
@@ -388,7 +388,7 @@ export default function CategoryPage() {
                   {currentCategory.description.length > 100 && (
                     <button 
                       onClick={() => setShowFullDescription(!showFullDescription)}
-                      className="text-gray-900 underline font-medium mt-1 hover:text-pink-600"
+                      className="text-gray-900 underline font-medium mt-1 hover:text-[#7B1E3A]"
                     >
                       {showFullDescription ? 'Read less' : 'Read more'}
                     </button>
@@ -431,7 +431,7 @@ export default function CategoryPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+                  className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7B1E3A] bg-white"
                 >
                   <option value="featured">Featured</option>
                   <option value="newest">Newest First</option>
@@ -448,12 +448,12 @@ export default function CategoryPage() {
                   values.map((value) => (
                     <span
                       key={`${category}-${value}`}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-pink-50 text-pink-700 rounded-full text-sm"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-[#F5F0E6] text-[#5C1629] rounded-full text-sm"
                     >
                       {value}
                       <button
                         onClick={() => handleFilterChange(category as keyof typeof selectedFilters, value)}
-                        className="hover:text-pink-900"
+                        className="hover:text-[#5C1629]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -467,7 +467,7 @@ export default function CategoryPage() {
 
             {productsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B1E3A]"></div>
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-12">
@@ -510,8 +510,8 @@ export default function CategoryPage() {
                       onClick={() => handleFilterChange('size', size)}
                       className={`px-3 py-1.5 text-sm border rounded-md transition-colors ${
                         selectedFilters.size.includes(size)
-                          ? 'bg-pink-600 text-white border-pink-600'
-                          : 'border-gray-300 text-gray-700 hover:border-pink-600'
+                          ? 'bg-[#7B1E3A] text-white border-[#7B1E3A]'
+                          : 'border-gray-300 text-gray-700 hover:border-[#7B1E3A]'
                       }`}
                     >
                       {size}
@@ -529,7 +529,7 @@ export default function CategoryPage() {
                 </button>
                 <button 
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="flex-1 py-3 bg-pink-600 text-white rounded-lg font-medium"
+                  className="flex-1 py-3 bg-[#7B1E3A] text-white rounded-lg font-medium"
                 >
                   Apply
                 </button>

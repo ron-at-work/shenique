@@ -83,7 +83,7 @@ export default function SignupPage() {
       color = "bg-red-500";
     } else if (score <= 4) {
       label = "Medium";
-      color = "bg-yellow-500";
+      color = "bg-[#C9A14A]";
     } else {
       label = "Strong";
       color = "bg-green-500";
@@ -206,7 +206,7 @@ export default function SignupPage() {
   // Success message after signup
   if (signupSuccess) {
     return (
-      <div className="min-h-screen flex flex-col bg-linear-to-br from-pink-50 via-white to-purple-50">
+      <div className="min-h-screen flex flex-col bg-linear-to-br from-[#F5F0E6] via-white to-[#F5F0E6]">
         <main className="flex-1 flex items-center justify-center py-8 px-4">
           <div className="w-full max-w-md text-center">
             <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
@@ -225,7 +225,7 @@ export default function SignupPage() {
               </p>
               <Link
                 href="/auth/login"
-                className="inline-flex items-center justify-center gap-2 py-3 px-6 bg-linear-to-r from-pink-600 to-pink-500 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-pink-600 transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 py-3 px-6 bg-linear-to-r from-[#7B1E3A] to-[#9A2E4F] text-white rounded-lg font-semibold hover:from-[#5C1629] hover:to-[#7B1E3A] transition-all cursor-pointer"
               >
                 Back to Login
               </Link>
@@ -237,13 +237,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-pink-50 via-white to-purple-50 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-[#F5F0E6] via-white to-[#F5F0E6] overflow-x-hidden">
       <main className="flex-1 flex items-center justify-center py-8 px-4">
         <div className="w-full max-w-lg">
           {/* Logo Section */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
-              <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-[#7B1E3A] via-[#9A2E4F] to-[#7B1E3A] bg-clip-text text-transparent">
                 Shenique
               </h1>
             </Link>
@@ -277,7 +277,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
                       errors.firstName ? "border-red-300 bg-red-50" : "border-gray-300"
-                    } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none placeholder:text-gray-400`}
+                    } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none placeholder:text-gray-400`}
                     placeholder="John"
                   />
                   {errors.firstName && (
@@ -297,7 +297,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
                       errors.lastName ? "border-red-300 bg-red-50" : "border-gray-300"
-                    } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none placeholder:text-gray-400`}
+                    } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none placeholder:text-gray-400`}
                     placeholder="Doe"
                   />
                   {errors.lastName && (
@@ -319,7 +319,7 @@ export default function SignupPage() {
                   onChange={handleChange}
                   className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
                     errors.email ? "border-red-300 bg-red-50" : "border-gray-300"
-                  } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none placeholder:text-gray-400`}
+                  } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none placeholder:text-gray-400`}
                   placeholder="john@example.com"
                 />
                 {errors.email && (
@@ -344,7 +344,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-r-lg border text-gray-900 ${
                       errors.phone ? "border-red-300 bg-red-50" : "border-gray-300"
-                    } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none placeholder:text-gray-400`}
+                    } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none placeholder:text-gray-400`}
                     placeholder="9876543210"
                     maxLength={10}
                   />
@@ -368,7 +368,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
                       errors.password ? "border-red-300 bg-red-50" : "border-gray-300"
-                    } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none pr-12 placeholder:text-gray-400`}
+                    } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none pr-12 placeholder:text-gray-400`}
                     placeholder="Create a strong password"
                   />
                   <button
@@ -404,7 +404,7 @@ export default function SignupPage() {
                     </div>
                     <p className={`text-xs ${
                       passwordStrength.label === "Weak" ? "text-red-500" :
-                      passwordStrength.label === "Medium" ? "text-yellow-600" :
+                      passwordStrength.label === "Medium" ? "text-[#C9A14A]" :
                       "text-green-600"
                     }`}>
                       {passwordStrength.label && `Password strength: ${passwordStrength.label}`}
@@ -432,7 +432,7 @@ export default function SignupPage() {
                       errors.confirmPassword ? "border-red-300 bg-red-50" : 
                       formData.confirmPassword && formData.password === formData.confirmPassword ? "border-green-300 bg-green-50" :
                       "border-gray-300"
-                    } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none pr-12 placeholder:text-gray-400`}
+                    } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none pr-12 placeholder:text-gray-400`}
                     placeholder="Re-enter your password"
                   />
                   <button
@@ -472,15 +472,15 @@ export default function SignupPage() {
                     name="agreeToTerms"
                     checked={formData.agreeToTerms}
                     onChange={handleChange}
-                    className="w-4 h-4 mt-0.5 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                    className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#7B1E3A] focus:ring-[#7B1E3A]"
                   />
                   <span className="text-sm text-gray-600">
                     I agree to the{" "}
-                    <Link href="/terms" className="text-pink-600 hover:underline">
+                    <Link href="/terms" className="text-[#7B1E3A] hover:underline">
                       Terms & Conditions
                     </Link>{" "}
                     and{" "}
-                    <Link href="/privacy" className="text-pink-600 hover:underline">
+                    <Link href="/privacy" className="text-[#7B1E3A] hover:underline">
                       Privacy Policy
                     </Link>
                     <span className="text-red-500"> *</span>
@@ -496,7 +496,7 @@ export default function SignupPage() {
                     name="subscribeNewsletter"
                     checked={formData.subscribeNewsletter}
                     onChange={handleChange}
-                    className="w-4 h-4 mt-0.5 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                    className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#7B1E3A] focus:ring-[#7B1E3A]"
                   />
                   <span className="text-sm text-gray-600">
                     Subscribe to newsletter for exclusive offers
@@ -508,7 +508,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 bg-linear-to-r from-pink-600 to-pink-500 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-pink-600 transition-all duration-300 shadow-lg shadow-pink-500/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-linear-to-r from-[#7B1E3A] to-[#9A2E4F] text-white rounded-lg font-semibold hover:from-[#5C1629] hover:to-[#7B1E3A] transition-all duration-300 shadow-lg shadow-[#7B1E3A]/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -527,7 +527,7 @@ export default function SignupPage() {
             {/* Login Link */}
             <p className="mt-6 text-center text-gray-600">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-pink-600 hover:text-pink-700 font-semibold cursor-pointer">
+              <Link href="/auth/login" className="text-[#7B1E3A] hover:text-[#5C1629] font-semibold cursor-pointer">
                 Sign In
               </Link>
             </p>

@@ -172,7 +172,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F5F0E6] overflow-x-hidden">
       {/* Hero Carousel Section - below header */}
       <section className="relative w-full h-screen">
 
@@ -242,7 +242,7 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-xl font-semibold text-white group-hover:text-pink-300">
+                        <h3 className="text-xl font-semibold text-white group-hover:text-[#C9A14A]">
                           {category.name}
                         </h3>
                       </div>
@@ -255,20 +255,20 @@ export default function Home() {
         </section>
 
         {/* Special Offers */}
-        <section className="py-16 bg-pink-50">
+        <section className="py-16 bg-[#F5F0E6]">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
               SPECIAL OFFERS
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="bg-gradient-to-br from-pink-400 to-purple-500 p-8 text-white text-center">
+                <div className="bg-gradient-to-br from-[#7B1E3A] to-[#5C1629] p-8 text-white text-center">
                   <h3 className="text-2xl font-bold mb-2">Buy 4 at ₹2199</h3>
                   <p className="text-sm opacity-90">Limited Time Offer</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="bg-gradient-to-br from-purple-400 to-pink-500 p-8 text-white text-center">
+                <div className="bg-gradient-to-br from-[#C9A14A] to-[#A88A3D] p-8 text-white text-center">
                   <h3 className="text-2xl font-bold mb-2">
                     Woolen Kurtis at ₹2299
                   </h3>
@@ -276,7 +276,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="bg-gradient-to-br from-pink-500 to-red-500 p-8 text-white text-center">
+                <div className="bg-gradient-to-br from-[#9A2E4F] to-[#7B1E3A] p-8 text-white text-center">
                   <h3 className="text-2xl font-bold mb-2">
                     Kurtis Under ₹1999
                   </h3>
@@ -284,7 +284,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="bg-gradient-to-br from-blue-400 to-purple-500 p-8 text-white text-center">
+                <div className="bg-gradient-to-br from-[#7B1E3A] to-[#C9A14A] p-8 text-white text-center">
                   <h3 className="text-2xl font-bold mb-2">Woolen Kurtis Under ₹1199</h3>
                   <p className="text-sm opacity-90">Shop Now</p>
                 </div>
@@ -320,11 +320,11 @@ export default function Home() {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-pink-600 line-clamp-2">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-[#7B1E3A] line-clamp-2">
                         {product.name}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xl font-bold text-pink-600">
+                        <span className="text-xl font-bold text-[#7B1E3A]">
                           {product.price}
                         </span>
                         {product.originalPrice && (
@@ -342,7 +342,7 @@ export default function Home() {
         </section>
 
         {/* Shop by Collections */}
-        <section className="py-16 bg-gray-50">
+        <section className="py-16 bg-[#F5F0E6]">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
               SHOP BY COLLECTIONS
@@ -363,7 +363,7 @@ export default function Home() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-xl font-semibold text-white group-hover:text-pink-300">
+                      <h3 className="text-xl font-semibold text-white group-hover:text-[#C9A14A]">
                         {collection.name}
                       </h3>
                     </div>
@@ -375,7 +375,7 @@ export default function Home() {
         </section>
 
         {/* Customer Reviews */}
-        <section className="py-16 bg-gray-50">
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
               CUSTOMER REVIEWS
@@ -384,11 +384,11 @@ export default function Home() {
               {reviews.map((review, index) => (
                 <div
                   key={index}
-                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow"
+                  className="bg-[#F5F0E6] p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow"
                 >
                   <div className="flex mb-3">
                     {[...Array(review.rating)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-lg">
+                      <span key={i} className="text-[#C9A14A] text-lg">
                         ★
                       </span>
                     ))}
@@ -404,7 +404,7 @@ export default function Home() {
         </section>
 
         {/* About Section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-[#F5F0E6]">
           <div className="container mx-auto px-4 max-w-4xl">
             <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
               Shop The Best Women's Kurtis Via Shenique
@@ -433,7 +433,7 @@ export default function Home() {
         </section>
 
         {/* Security Notice */}
-        <section className="bg-yellow-50 border-y border-yellow-200 py-4">
+        <section className="bg-[#C9A14A]/20 border-y border-[#C9A14A]/30 py-4">
           <div className="container mx-auto px-4 text-center">
             <p className="text-sm text-gray-700">
               ⚠️ Any call or message asking for advance/extra payment is a

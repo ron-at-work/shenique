@@ -91,13 +91,13 @@ function LoginForm() {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-pink-50 via-white to-purple-50">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-[#F5F0E6] via-white to-[#F5F0E6]">
       <main className="flex-1 flex items-center justify-center py-8 px-4">
         <div className="w-full max-w-md">
           {/* Logo Section */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
-              <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-[#7B1E3A] via-[#9A2E4F] to-[#7B1E3A] bg-clip-text text-transparent">
                 Shenique
               </h1>
             </Link>
@@ -134,7 +134,7 @@ function LoginForm() {
                       onChange={handleChange}
                       className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
                         errors.email ? "border-red-300 bg-red-50" : "border-gray-300"
-                      } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none placeholder:text-gray-400`}
+                      } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none placeholder:text-gray-400`}
                       placeholder="Enter your email"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -162,7 +162,7 @@ function LoginForm() {
                       onChange={handleChange}
                       className={`w-full px-4 py-3 rounded-lg border text-gray-900 ${
                         errors.password ? "border-red-300 bg-red-50" : "border-gray-300"
-                      } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none pr-12 placeholder:text-gray-400`}
+                      } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none pr-12 placeholder:text-gray-400`}
                       placeholder="Enter your password"
                     />
                     <button
@@ -195,11 +195,11 @@ function LoginForm() {
                       name="rememberMe"
                       checked={formData.rememberMe}
                       onChange={handleChange}
-                      className="w-4 h-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                      className="w-4 h-4 rounded border-gray-300 text-[#7B1E3A] focus:ring-[#7B1E3A]"
                     />
                     <span className="text-sm text-gray-600">Remember me</span>
                   </label>
-                  <Link href="/auth/forgot-password" className="text-sm text-pink-600 hover:text-pink-700 font-medium cursor-pointer">
+                  <Link href="/auth/forgot-password" className="text-sm text-[#7B1E3A] hover:text-[#5C1629] font-medium cursor-pointer">
                     Forgot password?
                   </Link>
                 </div>
@@ -208,7 +208,7 @@ function LoginForm() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 bg-linear-to-r from-pink-600 to-pink-500 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-pink-600 transition-all duration-300 shadow-lg shadow-pink-500/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 bg-linear-to-r from-[#7B1E3A] to-[#9A2E4F] text-white rounded-lg font-semibold hover:from-[#5C1629] hover:to-[#7B1E3A] transition-all duration-300 shadow-lg shadow-[#7B1E3A]/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -227,7 +227,7 @@ function LoginForm() {
             {/* Sign Up Link */}
             <p className="mt-6 text-center text-gray-600">
               Don&apos;t have an account?{" "}
-              <Link href="/auth/signup" className="text-pink-600 hover:text-pink-700 font-semibold cursor-pointer">
+              <Link href="/auth/signup" className="text-[#7B1E3A] hover:text-[#5C1629] font-semibold cursor-pointer">
                 Sign Up
               </Link>
             </p>
@@ -257,12 +257,12 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex flex-col bg-linear-to-br from-pink-50 via-white to-purple-50">
+      <div className="min-h-screen flex flex-col bg-linear-to-br from-[#F5F0E6] via-white to-[#F5F0E6]">
         <main className="flex-1 flex items-center justify-center py-8 px-4">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
               <Link href="/" className="inline-block">
-                <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-[#7B1E3A] via-[#9A2E4F] to-[#7B1E3A] bg-clip-text text-transparent">
                   Shenique
                 </h1>
               </Link>

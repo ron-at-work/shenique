@@ -23,7 +23,7 @@ export default function Footer() {
   }, [categoriesData]);
 
   return (
-    <footer className="bg-gray-900 text-gray-300 overflow-x-hidden">
+    <footer className="bg-[#7B1E3A] text-gray-200 overflow-x-hidden">
       <div className="container mx-auto px-4 py-12 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Discover */}
@@ -31,13 +31,13 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Discover</h3>
             {categoriesLoading ? (
               <ul className="space-y-2 text-sm">
-                <li className="text-gray-500">Loading...</li>
+                <li className="text-gray-400">Loading...</li>
               </ul>
             ) : categories.length > 0 ? (
               <ul className="space-y-2 text-sm">
                 {categories.map((category) => (
                   <li key={category.slug}>
-                    <Link href={category.href} className="hover:text-pink-400">
+                    <Link href={category.href} className="hover:text-[#C9A14A] transition-colors">
                       {category.name}
                     </Link>
                   </li>
@@ -46,12 +46,12 @@ export default function Footer() {
             ) : (
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="/kurti" className="hover:text-pink-400">
+                  <Link href="/kurti" className="hover:text-[#C9A14A] transition-colors">
                     Kurti
                   </Link>
                 </li>
                 <li>
-                  <Link href="/woolen-kurti" className="hover:text-pink-400">
+                  <Link href="/woolen-kurti" className="hover:text-[#C9A14A] transition-colors">
                     Woolen Kurti
                   </Link>
                 </li>
@@ -66,42 +66,42 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about-us" className="hover:text-pink-400">
+                <Link href="/about-us" className="hover:text-[#C9A14A] transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-pink-400">
+                <Link href="/terms" className="hover:text-[#C9A14A] transition-colors">
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link href="/shipping" className="hover:text-pink-400">
+                <Link href="/shipping" className="hover:text-[#C9A14A] transition-colors">
                   Shipping Policy
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="hover:text-pink-400">
+                <Link href="/returns" className="hover:text-[#C9A14A] transition-colors">
                   Return Policy
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-pink-400">
+                <Link href="/privacy" className="hover:text-[#C9A14A] transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/track-order" className="hover:text-pink-400">
+                <Link href="/track-order" className="hover:text-[#C9A14A] transition-colors">
                   Track Order
                 </Link>
               </li>
               <li>
-                <Link href="/store-locator" className="hover:text-pink-400">
+                <Link href="/store-locator" className="hover:text-[#C9A14A] transition-colors">
                   Store Locator
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-pink-400">
+                <Link href="/contact" className="hover:text-[#C9A14A] transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -115,7 +115,7 @@ export default function Footer() {
               <p>
                 <a
                   href="tel:+918799718988"
-                  className="hover:text-pink-400"
+                  className="hover:text-[#C9A14A] transition-colors"
                 >
                   +91 8799718988
                 </a>
@@ -123,7 +123,7 @@ export default function Footer() {
               <p>
                 <a
                   href="tel:+919315729367"
-                  className="hover:text-pink-400"
+                  className="hover:text-[#C9A14A] transition-colors"
                 >
                   +91 9315729367
                 </a>
@@ -131,7 +131,7 @@ export default function Footer() {
               <p>
                 <a
                   href="mailto:hi@shenique.in"
-                  className="hover:text-pink-400"
+                  className="hover:text-[#C9A14A] transition-colors"
                 >
                   hi@shenique.in
                 </a>
@@ -154,11 +154,11 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 min-w-0 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-white"
+                className="flex-1 min-w-0 px-4 py-2 bg-[#5C1629] border border-[#9A2E4F] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C9A14A] text-white placeholder:text-gray-400"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors shrink-0 whitespace-nowrap"
+                className="px-4 py-2 bg-[#C9A14A] text-white rounded-lg hover:bg-[#D4B76A] transition-colors shrink-0 whitespace-nowrap font-medium"
               >
                 Subscribe
               </button>
@@ -168,7 +168,7 @@ export default function Footer() {
                 href="https://www.instagram.com/shenique.in/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-pink-400 transition-colors"
+                className="text-gray-300 hover:text-[#C9A14A] transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -180,19 +180,19 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-8 pt-8">
+        <div className="border-t border-[#9A2E4F] mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm">
               © 2026 Shenique. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm">
-              <Link href="/terms" className="hover:text-pink-400">
+              <Link href="/terms" className="hover:text-[#C9A14A] transition-colors">
                 Terms
               </Link>
-              <Link href="/privacy" className="hover:text-pink-400">
+              <Link href="/privacy" className="hover:text-[#C9A14A] transition-colors">
                 Privacy
               </Link>
-              <Link href="/sitemap" className="hover:text-pink-400">
+              <Link href="/sitemap" className="hover:text-[#C9A14A] transition-colors">
                 Sitemap
               </Link>
             </div>
@@ -202,4 +202,3 @@ export default function Footer() {
     </footer>
   );
 }
-

@@ -129,7 +129,7 @@ export default function OrdersPage() {
             <p className="text-gray-600 mb-8">Please login to view your orders</p>
             <Link
               href="/auth/login?redirect=/orders"
-              className="inline-block px-8 py-3 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 transition-colors"
+              className="inline-block px-8 py-3 bg-[#7B1E3A] text-white rounded-lg font-medium hover:bg-[#5C1629] transition-colors"
             >
               Login
             </Link>
@@ -152,7 +152,7 @@ export default function OrdersPage() {
         {loading && (
           <div className="flex items-center justify-center py-16">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B1E3A] mx-auto mb-4"></div>
               <p className="text-gray-600">Loading orders...</p>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function OrdersPage() {
                 <p className="text-gray-600 mb-8">You haven't placed any orders yet</p>
                 <Link
                   href="/kurti"
-                  className="inline-block px-8 py-3 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 transition-colors"
+                  className="inline-block px-8 py-3 bg-[#7B1E3A] text-white rounded-lg font-medium hover:bg-[#5C1629] transition-colors"
                 >
                   Start Shopping
                 </Link>
@@ -269,7 +269,7 @@ export default function OrdersPage() {
                         <div className="flex gap-3">
                           
                           {order.status === 'processing' && (
-                            <button className="px-4 py-2 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 transition-colors">
+                            <button className="px-4 py-2 bg-[#7B1E3A] text-white rounded-lg font-medium hover:bg-[#5C1629] transition-colors">
                               Track Order
                             </button>
                           )}

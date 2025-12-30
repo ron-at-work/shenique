@@ -44,13 +44,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-pink-50 via-white to-purple-50">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-[#F5F0E6] via-white to-[#F5F0E6]">
       <main className="flex-1 flex items-center justify-center py-8 px-4">
         <div className="w-full max-w-md">
           {/* Logo Section */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
-              <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-pink-600 via-pink-500 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-(family-name:--font-dancing) font-semibold bg-linear-to-r from-[#7B1E3A] via-[#9A2E4F] to-[#7B1E3A] bg-clip-text text-transparent">
                 Shenique
               </h1>
             </Link>
@@ -61,8 +61,8 @@ export default function ForgotPasswordPage() {
             {step === "email" && (
               <>
                 <div className="text-center mb-6">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-100 flex items-center justify-center">
-                    <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F5F0E6] flex items-center justify-center">
+                    <svg className="w-8 h-8 text-[#7B1E3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                     </svg>
                   </div>
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
                       }}
                       className={`w-full px-4 py-3 rounded-lg border ${
                         error ? "border-red-300 bg-red-50" : "border-gray-300"
-                      } focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none`}
+                      } focus:ring-2 focus:ring-[#7B1E3A] focus:border-[#7B1E3A] transition-all outline-none`}
                       placeholder="Enter your email"
                     />
                   </div>
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-linear-to-r from-pink-600 to-pink-500 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-pink-600 transition-all duration-300 shadow-lg shadow-pink-500/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 bg-linear-to-r from-[#7B1E3A] to-[#9A2E4F] text-white rounded-lg font-semibold hover:from-[#5C1629] hover:to-[#7B1E3A] transition-all duration-300 shadow-lg shadow-[#7B1E3A]/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {isLoading ? (
                       <>
@@ -140,7 +140,7 @@ export default function ForgotPasswordPage() {
                     setStep("email");
                     setEmail("");
                   }}
-                  className="text-pink-600 hover:text-pink-700 font-medium text-sm cursor-pointer"
+                  className="text-[#7B1E3A] hover:text-[#5C1629] font-medium text-sm cursor-pointer"
                 >
                   Didn&apos;t receive email? Try again
                 </button>
@@ -151,7 +151,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-6 text-center">
               <Link
                 href="/auth/login"
-                className="inline-flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-[#7B1E3A] transition-colors cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
